@@ -41,8 +41,8 @@ a{color:inherit}
   background-size:cover;background-position:center;position:relative;overflow:hidden
 }
 /* バンド写真と帯写真はアンバー×ティールのデュオトーンに寄せる */
-.bandimg,.strip,.portrait{filter:grayscale(1) contrast(1.28) brightness(.95)}
-.bandimg::after,.strip::after,.portrait::after{
+.strip,.portrait{filter:grayscale(1) contrast(1.28) brightness(.95)}
+.strip::after,.portrait::after{
   content:"";position:absolute;inset:0;mix-blend-mode:screen;
   background:linear-gradient(160deg,rgba(240,166,60,.5),rgba(30,86,96,.5))
 }
@@ -84,9 +84,15 @@ a{color:inherit}
    自己紹介・条件・連絡先
    ========================================================= */
 .intro{
-  display:grid;grid-template-columns:1fr 210px;gap:32px;align-items:start;
+  display:grid;grid-template-columns:1fr 210px;gap:0 32px;align-items:start;
+  grid-template-areas:"lede portrait" "rest portrait" "sns sns" "meta meta";
   padding:8px 0 42px;border-bottom:2px solid var(--ink)
 }
+.intro .lede{grid-area:lede}
+.intro .introText{grid-area:rest}
+.intro .portrait{grid-area:portrait;align-self:center}
+.intro .sns{grid-area:sns}
+.intro .meta{grid-area:meta}
 .portrait{aspect-ratio:3/4;border:2px solid var(--ink)}
 .lede{margin:0;max-width:38em;font-size:15.5px}
 
@@ -226,8 +232,7 @@ footer{padding:38px 0 62px}
    ========================================================= */
 @media(max-width:760px){
   .hero{min-height:72vh}
-  .intro{grid-template-columns:1fr;gap:24px}
-  .portrait{aspect-ratio:4/3}
+  .intro{grid-template-columns:1fr 100px;grid-template-areas:"lede portrait" "rest rest" "sns sns" "meta meta";gap:0 16px}
   .info,.info.sub{grid-template-columns:1fr}
   .band{grid-template-columns:1fr}
   .bandimg{aspect-ratio:16/9;order:-1}

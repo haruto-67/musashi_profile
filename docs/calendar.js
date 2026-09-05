@@ -36,7 +36,7 @@
       var hit=list.filter(function(g){return g.d===iso;});
       h+='<div class="day'+(hit.length?" hit":"")+'"><b>'+day+'</b>';
       hit.forEach(function(g){
-        h+='<span class="ev"><u>'+g.sh+'</u><em>'+g.e+'</em></span>';
+        h+='<span class="ev"><u>'+g.e+'</u><em>'+g.b+'</em></span>';
       });
       h+='</div>';
     }
@@ -44,7 +44,7 @@
     list.forEach(function(g){
       var dd=new Date(g.d.replace(/-/g,"/"));
       h+='<li><span class="gd">'+(dd.getMonth()+1)+'/'+dd.getDate()+'<em>'+W[dd.getDay()]+'</em></span>'
-        +'<span class="gmain"><b>'+g.b+'</b>'+(g.n?'<u class="gn">'+g.n+'</u>':'')+'<span class="ge">'+g.e+'</span></span>'
+        +'<span class="gmain"><b>'+g.e+'</b><span class="ge">'+g.b+(g.n?'<u class="gn">'+g.n+'</u>':'')+'</span></span>'
         +'<span class="gv"><em>'+g.c+'</em>'+g.v+'</span>'
         +'<span class="gt">OPEN '+g.o+'<em>出番 '+g.st+'</em></span></li>';
     });

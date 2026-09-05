@@ -213,8 +213,12 @@ section{padding:50px 0;border-bottom:2px solid var(--ink)}
 /* =========================================================
    フッター
    ========================================================= */
-footer{padding:34px 0 62px}
-.word{margin:0 0 16px;max-width:34em;font-size:16.5px;font-weight:700;line-height:1.9}
+footer{padding:38px 0 62px}
+.word{
+  margin:0 0 22px;max-width:none;padding:2px 0 2px 22px;
+  border-left:2px solid var(--accent);
+  font-size:15.5px;font-weight:500;line-height:2.05
+}
 .fine{margin:0;font-size:12.5px;color:var(--faint)}
 
 /* =========================================================
@@ -231,10 +235,12 @@ footer{padding:34px 0 62px}
   .day{min-height:58px;padding:3px 4px}
   .day b{font-size:12px;margin-bottom:2px}
   .ev{font-size:8.5px}
-  .ev em{display:none}          /* 狭いのでライブ名は隠してバンド名だけ残す */
+  .ev u{display:none}           /* 狭いのでライブ名は隠してバンド名だけ残す */
+  .ev em{color:var(--ink);font-weight:700}
   .gigs li{grid-template-columns:56px 1fr;gap:2px 12px}
   .gv,.gt{grid-column:2}
   .gt em{display:inline;margin-left:8px}
+  .word{padding-left:16px;font-size:15px}
 }
 
 @media (prefers-reduced-motion: reduce){

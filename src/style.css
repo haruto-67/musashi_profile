@@ -1,0 +1,242 @@
+/* =========================================================
+   相川涼太（ドラマー）個人ページ
+   配色は「深夜の街灯」— ティールの夜 × ナトリウム灯のアンバー
+   ========================================================= */
+
+:root{
+  /* 色 */
+  --paper:#0A1418;              /* 下地（夜） */
+  --panel:#122229;              /* 画像の下敷き */
+  --ink:#E8E3D8;               /* 文字 */
+  --accent:#F0A63C;            /* ナトリウム灯のアンバー */
+  --accent-hi:#FFD08A;         /* 光のいちばん明るいところ */
+  --faint:#7B8C90;             /* 補足文字 */
+  --rule:rgba(232,227,216,.2); /* 罫線 */
+  --dash:1px dashed rgba(232,227,216,.28);
+
+  /* 書体 */
+  --fdisp:"Barlow Condensed",sans-serif;
+  --fbody:"Zen Kaku Gothic New",system-ui,sans-serif;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);position:relative;
+  font-family:var(--fbody);font-weight:500;line-height:1.85;font-size:16px;
+}
+/* 刷り物っぽい粒子 */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.3;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.3'/></svg>");
+}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+a{color:inherit}
+
+/* ---------- 画像
+   HTML 側で --src:url('images/xxx.jpg') を指定する。
+   ファイルが無いときは --panel の色で塗られる。         ---------- */
+.img{
+  background-color:var(--panel);background-image:var(--src);
+  background-size:cover;background-position:center;position:relative;overflow:hidden
+}
+/* バンド写真と帯写真はアンバー×ティールのデュオトーンに寄せる */
+.bandimg,.strip,.portrait{filter:grayscale(1) contrast(1.28) brightness(.95)}
+.bandimg::after,.strip::after,.portrait::after{
+  content:"";position:absolute;inset:0;mix-blend-mode:screen;
+  background:linear-gradient(160deg,rgba(240,166,60,.5),rgba(30,86,96,.5))
+}
+
+/* =========================================================
+   ヘッダー（全幅の写真・街灯のグロー）
+   ========================================================= */
+.hero{
+  position:relative;min-height:86vh;display:flex;align-items:flex-end;overflow:hidden
+}
+.hero .shot{position:absolute;inset:0;background-position:center 35%}
+/* 光源。写真の街灯の位置に合わせて at 68% 8% を調整する */
+.hero .shot::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(46% 34% at 68% 8%,rgba(255,208,138,.5),rgba(240,166,60,.14) 45%,transparent 72%),
+    linear-gradient(180deg,rgba(10,20,24,.28),rgba(10,20,24,0) 42%)
+}
+/* 写真から下地へ溶かす */
+.hero::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:58%;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,20,24,0) 0%,rgba(10,20,24,.55) 46%,rgba(10,20,24,.92) 82%,var(--paper) 100%)
+}
+.hero .in{position:relative;z-index:2;width:100%;max-width:880px;margin:0 auto;padding:0 22px 58px}
+.hero .role{
+  font-family:var(--fdisp);font-weight:600;font-size:13px;letter-spacing:.32em;
+  color:var(--accent);margin:0 0 10px
+}
+.hero h1{
+  font-size:clamp(40px,11vw,84px);font-weight:900;line-height:1.02;margin:0;
+  letter-spacing:.02em;text-shadow:0 0 40px rgba(10,20,24,.75)
+}
+.hero .en{
+  font-family:var(--fdisp);font-weight:500;font-size:15px;letter-spacing:.3em;
+  color:rgba(232,227,216,.7);margin:8px 0 0
+}
+
+/* =========================================================
+   自己紹介・条件・連絡先
+   ========================================================= */
+.intro{
+  display:grid;grid-template-columns:1fr 210px;gap:32px;align-items:start;
+  padding:8px 0 42px;border-bottom:2px solid var(--ink)
+}
+.portrait{aspect-ratio:3/4;border:2px solid var(--ink)}
+.lede{margin:0;max-width:38em;font-size:15.5px}
+
+/* 活動地域・報酬（強調） */
+.info{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;margin:24px 0 0}
+.info div{border-top:2px solid var(--accent);padding-top:9px}
+.info dt{
+  font-family:var(--fdisp);font-weight:600;font-size:12px;letter-spacing:.18em;
+  color:var(--accent);margin-bottom:2px
+}
+.info dd{margin:0;font-size:13.5px;line-height:1.75}
+
+/* 日程・機材（補足） */
+.info.sub{
+  margin-top:18px;padding:14px 0;gap:12px 30px;
+  border-top:var(--dash);border-bottom:var(--dash)
+}
+.info.sub div{border-top:0;padding-top:0}
+.info.sub dt{color:var(--faint);letter-spacing:.16em;font-size:11px}
+.info.sub dd{font-size:13px;color:#C7C3BA}
+
+.sns{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0}
+.sns a{
+  display:block;padding:5px 15px;border:1.5px solid var(--ink);font-size:13.5px;
+  text-decoration:none;font-family:var(--fdisp);font-weight:600;letter-spacing:.1em;
+  transition:background .14s,color .14s,border-color .14s
+}
+.sns a:hover,.sns a:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.meta{margin:16px 0 0;font-size:13px;color:var(--faint)}
+.meta b{color:var(--ink);font-weight:700}
+
+/* =========================================================
+   セクション見出し
+   ========================================================= */
+section{padding:50px 0;border-bottom:2px solid var(--ink)}
+.head{display:flex;align-items:baseline;gap:14px;margin:0 0 30px}
+.head h2{font-family:var(--fdisp);font-weight:600;font-size:21px;letter-spacing:.14em;margin:0}
+.head span{font-size:13px;color:var(--faint)}
+.head::after{content:"";flex:1;height:6px;background:var(--accent)}
+
+/* =========================================================
+   バンド
+   ========================================================= */
+.band{
+  display:grid;grid-template-columns:1fr 168px;gap:24px;align-items:start;
+  padding:26px 0;border-top:var(--dash)
+}
+.band:first-of-type{border-top:0;padding-top:0}
+.bandimg{aspect-ratio:1;border:2px solid var(--ink)}
+.band h3{font-family:var(--fdisp);font-weight:600;font-size:clamp(28px,7vw,48px);line-height:1;margin:0}
+.part{
+  display:inline-block;margin:10px 0 0;padding:2px 9px;background:var(--accent);color:var(--paper);
+  font-size:11px;letter-spacing:.14em;font-family:var(--fdisp);font-weight:600
+}
+.band p{margin:12px 0 0;max-width:38em;font-size:15px}
+.links{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0}
+.links a{display:block;padding:4px 12px;border:1.5px solid var(--ink);font-size:13px;text-decoration:none}
+.links a:hover,.links a:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+
+/* 帯写真 */
+.strip{aspect-ratio:24/7;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+
+/* =========================================================
+   サポート実績
+   ========================================================= */
+.support{columns:2;column-gap:34px;font-size:15px}
+.support div{break-inside:avoid;padding:7px 0;border-bottom:var(--dash)}
+.support .yr{font-family:var(--fdisp);font-weight:600;color:var(--accent);margin-right:10px;font-size:13px}
+.support .note{color:var(--faint);font-size:13px;margin-left:6px}
+
+/* =========================================================
+   ライブカレンダー（calendar.js が中身を生成）
+   ========================================================= */
+.calnav{display:flex;gap:8px;margin:0 0 18px}
+.mbtn{
+  font-family:var(--fdisp);font-weight:600;font-size:19px;letter-spacing:.06em;line-height:1.2;
+  background:transparent;color:var(--faint);border:1.5px solid var(--ink);
+  padding:6px 17px;cursor:pointer
+}
+.mbtn i{font-style:normal;font-size:11px;margin-left:8px;font-family:var(--fbody);font-weight:500}
+.mbtn.is-on{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.mbtn:focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
+.calcap{font-family:var(--fdisp);font-weight:600;font-size:13px;letter-spacing:.18em;color:var(--faint);margin:0 0 8px}
+
+.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dow{margin-bottom:3px}
+.dow span{text-align:center;font-size:10px;color:var(--faint);font-family:var(--fdisp);font-weight:600;letter-spacing:.1em}
+.day{
+  min-height:84px;padding:5px 6px;border:1px solid var(--rule);
+  font-family:var(--fdisp);color:var(--faint);overflow:hidden
+}
+.day.pad{border:0}
+.day b{display:block;font-size:14px;font-weight:600;line-height:1.2;margin-bottom:4px}
+.day.hit{
+  background:rgba(240,166,60,.15);border-color:rgba(240,166,60,.5);
+  box-shadow:0 0 16px rgba(240,166,60,.13)
+}
+.day.hit b{color:var(--accent-hi)}
+/* マス内：バンド名（短縮）とライブ名 */
+.ev{display:block;font-family:var(--fbody);font-size:10px;line-height:1.4;margin-bottom:3px}
+.ev u{display:block;text-decoration:none;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev em{display:block;font-style:normal;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* カレンダー下の一覧 */
+.gigs{list-style:none;margin:22px 0 0;padding:0}
+.gigs li{
+  display:grid;grid-template-columns:66px minmax(0,1.5fr) minmax(0,1fr) auto;
+  gap:4px 16px;padding:13px 0;border-bottom:var(--dash);align-items:baseline
+}
+.gd{font-family:var(--fdisp);font-weight:600;font-size:18px}
+.gd em{font-style:normal;font-size:11px;color:var(--accent);margin-left:3px}
+.gmain b{font-size:15.5px;font-weight:700}
+.gn{
+  text-decoration:none;font-size:10.5px;background:var(--accent);color:var(--paper);
+  padding:1px 7px;margin-left:8px;font-family:var(--fdisp);font-weight:600;letter-spacing:.08em
+}
+.ge{display:block;font-size:13px;color:var(--faint)}
+.gv{font-size:14px}
+.gv em{font-style:normal;color:var(--faint);font-size:12px;margin-right:7px}
+.gt{font-family:var(--fdisp);font-weight:500;font-size:13.5px;color:var(--faint);white-space:nowrap}
+.gt em{font-style:normal;display:block}
+.gigs .none{display:block;color:var(--faint);font-size:14px}
+
+/* =========================================================
+   フッター
+   ========================================================= */
+footer{padding:34px 0 62px}
+.word{margin:0 0 16px;max-width:34em;font-size:16.5px;font-weight:700;line-height:1.9}
+.fine{margin:0;font-size:12.5px;color:var(--faint)}
+
+/* =========================================================
+   スマホ
+   ========================================================= */
+@media(max-width:760px){
+  .hero{min-height:72vh}
+  .intro{grid-template-columns:1fr;gap:24px}
+  .portrait{aspect-ratio:4/3}
+  .info,.info.sub{grid-template-columns:1fr}
+  .band{grid-template-columns:1fr}
+  .bandimg{aspect-ratio:16/9;order:-1}
+  .support{columns:1}
+  .day{min-height:58px;padding:3px 4px}
+  .day b{font-size:12px;margin-bottom:2px}
+  .ev{font-size:8.5px}
+  .ev em{display:none}          /* 狭いのでライブ名は隠してバンド名だけ残す */
+  .gigs li{grid-template-columns:56px 1fr;gap:2px 12px}
+  .gv,.gt{grid-column:2}
+  .gt em{display:inline;margin-left:8px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}

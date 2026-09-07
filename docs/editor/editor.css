@@ -75,11 +75,14 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
 .fieldRow{display:flex;gap:10px;flex-wrap:wrap}
 .fieldRow .field{flex:1;min-width:120px}
 
-.linkRow{display:flex;gap:6px;align-items:center;margin:0 0 6px}
+.linkRow{display:flex;gap:6px;align-items:center;margin:0 0 6px;min-width:0}
 .linkRow input{font:inherit;font-size:16px;background:var(--panel);color:var(--ink);border:1px solid var(--rule);padding:4px 8px}
 .linkRow input.label{width:120px;flex-shrink:0}
-.linkRow input.url{flex:1}
-.linkRow button{background:transparent;color:var(--faint);border:1px solid var(--rule);width:26px;cursor:pointer}
+/* input はflexアイテムのデフォルトmin-width:autoがsize属性由来の内在幅を
+   持つため、flex:1だけだと縮まずにコンテナからはみ出す（CSS Gridの
+   min-width:auto問題と同種）。min-width:0で明示的に縮められるようにする */
+.linkRow input.url{flex:1;min-width:0}
+.linkRow button{background:transparent;color:var(--faint);border:1px solid var(--rule);width:26px;flex-shrink:0;cursor:pointer}
 .addLinkBtn{
   font-family:var(--fdisp);font-size:11px;letter-spacing:.06em;background:transparent;color:var(--accent);
   border:1px solid var(--accent);padding:3px 10px;cursor:pointer

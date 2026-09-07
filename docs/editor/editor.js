@@ -93,6 +93,13 @@
       });
   })();
 
+  // content.json 内の画像パスはdocsルート基準（例: "images/band-x.jpg"）。
+  // 編集画面は /editor/ 配下にあるので、そのまま url() に渡すと
+  // /editor/images/... を探しにいって404になる。相対パスを一段上げる。
+  function imageUrl(path) {
+    return path ? "../" + path : "";
+  }
+
   function newCid() {
     cidCounter += 1;
     return "c" + cidCounter + "_" + Date.now().toString(36);
@@ -206,6 +213,7 @@
     delBtn.title = "削除";
     el.appendChild(delBtn);
     var currentPath = initialPath || "";
+    if (currentPath) el.style.setProperty("--src", "url('" + imageUrl(currentPath) + "')");
 
     function refresh() {
       var hasImage = !!(currentPath || pendingImages[key]);
@@ -610,7 +618,7 @@
     roleText.textContent = p.role || "";
     nameText.textContent = p.name || "";
     nameEnText.textContent = p.nameEn || "";
-    heroShotEl.style.setProperty("--src", "url('" + (p.heroImage || "") + "')");
+    if (p.heroImage) heroShotEl.style.setProperty("--src", "url('" + imageUrl(p.heroImage) + "')");
     ledeText.textContent = p.lede || "";
     areaText.textContent = p.area || "";
     gearText.textContent = p.gear || "";

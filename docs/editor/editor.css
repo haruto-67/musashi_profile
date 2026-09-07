@@ -1,0 +1,104 @@
+/* /editor 専用のスタイル。style.css（本体と共通）を読み込んだ上でこれを重ねる。 */
+
+body{padding-bottom:64px}
+
+/* ---------- 入り口のパスワードゲート ---------- */
+.authGate{
+  position:fixed;inset:0;z-index:200;background:var(--paper);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px
+}
+.authGate h1{font-family:var(--fdisp);font-weight:600;font-size:20px;letter-spacing:.1em;margin:0}
+.authGate form{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.authGate input[type=password]{
+  font:inherit;font-size:16px;background:var(--panel);color:var(--ink);
+  border:1.5px solid var(--ink);padding:9px 12px;min-width:220px
+}
+.authGate button{
+  font-family:var(--fdisp);font-weight:600;letter-spacing:.08em;font-size:14px;
+  background:var(--accent);color:var(--paper);border:0;padding:9px 20px;cursor:pointer
+}
+.authGate button:disabled{opacity:.5;cursor:default}
+.authGate .status{font-size:13px;color:var(--faint);min-height:1.4em}
+.authGate .status.err{color:#ff8b7a}
+[hidden]{display:none !important}
+
+/* ---------- 編集可能テキスト ---------- */
+[contenteditable="true"]{
+  outline:1px dashed rgba(232,227,216,.35);outline-offset:3px;cursor:text;
+  min-width:1.5em;min-height:1em
+}
+[contenteditable="true"]:focus{outline:1.5px solid var(--accent);outline-offset:3px}
+[contenteditable="true"]:empty::before{content:attr(data-placeholder);color:var(--faint)}
+
+/* ---------- 画像編集 ---------- */
+.imgEdit{position:relative;cursor:pointer}
+.imgEdit .editOverlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,20,24,.6);color:var(--ink);font-family:var(--fdisp);font-weight:600;
+  font-size:13px;letter-spacing:.08em;opacity:0;transition:opacity .15s
+}
+.imgEdit:hover .editOverlay,.imgEdit:focus-within .editOverlay{opacity:1}
+.imgEdit.empty .editOverlay{opacity:1;background:var(--panel);color:var(--faint)}
+.imgEdit .delImgBtn{
+  position:absolute;top:6px;right:6px;z-index:3;background:rgba(10,20,24,.75);color:var(--ink);
+  border:1px solid var(--ink);width:26px;height:26px;line-height:1;cursor:pointer;font-size:14px
+}
+.imgEdit input[type=file]{display:none}
+
+/* ---------- 一覧（SNS・リンク・バンド・サポート・ライブ）共通の行UI ---------- */
+.rowCard{position:relative;border:var(--dash);padding:14px 16px;margin:0 0 14px}
+.rowTools{display:flex;gap:6px;justify-content:flex-end;margin-bottom:8px}
+.rowTools button{
+  font-family:var(--fdisp);font-size:11px;letter-spacing:.06em;
+  background:transparent;color:var(--faint);border:1px solid var(--rule);padding:3px 9px;cursor:pointer
+}
+.rowTools button:hover{color:var(--ink);border-color:var(--ink)}
+.rowTools button.danger:hover{color:#ff8b7a;border-color:#ff8b7a}
+.addRowBtn{
+  display:block;width:100%;font-family:var(--fdisp);font-weight:600;letter-spacing:.08em;font-size:13px;
+  background:transparent;color:var(--accent);border:1.5px dashed var(--accent);padding:10px;cursor:pointer;margin:0 0 24px
+}
+
+.field{margin:0 0 10px}
+.field label{display:block;font-family:var(--fdisp);font-size:10.5px;letter-spacing:.12em;color:var(--faint);margin:0 0 3px}
+.field input,.field textarea{
+  width:100%;font:inherit;font-size:14px;background:var(--panel);color:var(--ink);
+  border:1px solid var(--rule);padding:6px 8px
+}
+.field input.invalid{border-color:#ff8b7a}
+.fieldRow{display:flex;gap:10px;flex-wrap:wrap}
+.fieldRow .field{flex:1;min-width:120px}
+
+.linkRow{display:flex;gap:6px;align-items:center;margin:0 0 6px}
+.linkRow input{font:inherit;font-size:13px;background:var(--panel);color:var(--ink);border:1px solid var(--rule);padding:4px 8px}
+.linkRow input.label{width:110px}
+.linkRow input.url{flex:1}
+.linkRow button{background:transparent;color:var(--faint);border:1px solid var(--rule);width:26px;cursor:pointer}
+.addLinkBtn{
+  font-family:var(--fdisp);font-size:11px;letter-spacing:.06em;background:transparent;color:var(--accent);
+  border:1px solid var(--accent);padding:3px 10px;cursor:pointer
+}
+
+/* ---------- 確定バー ---------- */
+.editorBar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper);border-top:2px solid var(--ink);
+  padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap
+}
+.editorBar input[type=password]{
+  flex:1;min-width:160px;font:inherit;font-size:14px;background:var(--panel);color:var(--ink);
+  border:1.5px solid var(--ink);padding:8px 10px
+}
+.editorBar button{
+  font-family:var(--fdisp);font-weight:600;letter-spacing:.08em;font-size:14px;
+  background:var(--accent);color:var(--paper);border:0;padding:9px 22px;cursor:pointer
+}
+.editorBar button:disabled{opacity:.5;cursor:default}
+.editorStatus{width:100%;font-size:12.5px;color:var(--faint)}
+.editorStatus.ok{color:#8fd19e}
+.editorStatus.err{color:#ff8b7a}
+
+.sectionTitle{
+  font-family:var(--fdisp);font-weight:600;font-size:12px;letter-spacing:.14em;color:var(--accent);
+  margin:34px 0 12px;padding-top:14px;border-top:var(--dash)
+}
+.sectionTitle:first-child{margin-top:0;padding-top:0;border-top:0}

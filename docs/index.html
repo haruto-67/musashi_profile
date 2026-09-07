@@ -15,11 +15,11 @@
 
 <!-- ============ ヘッダー（全幅の写真） ============ -->
 <header class="hero">
-  <div class="shot img" style="--src:url('images/hero.jpg')"></div>
+  <div class="shot img" id="heroShot" style="--src:url('images/hero.jpg')"></div>
   <div class="in">
-    <p class="role">DRUMS / PERCUSSION</p>
-    <h1>長谷川 武蔵</h1>
-    <p class="en">MUSASHI HASEGAWA</p>
+    <p class="role" id="roleText">DRUMS / PERCUSSION</p>
+    <h1 id="nameText">長谷川 武蔵</h1>
+    <p class="en" id="nameEnText">MUSASHI HASEGAWA</p>
   </div>
 </header>
 
@@ -27,75 +27,82 @@
 
   <!-- ============ 自己紹介・条件・連絡先 ============ -->
   <div class="intro">
-    <p class="lede">プロ志望の20歳ドラマーです！<br>ROCK IN JAPAN FESのGRASS STAGEに立つことを目指して練習中です！<br>まだまだ下手ですが、練習頑張るので応援していただけると嬉しいです！</p>
+    <p class="lede" id="ledeText">プロ志望の20歳ドラマーです！
+ROCK IN JAPAN FESのGRASS STAGEに立つことを目指して練習中です！
+まだまだ下手ですが、練習頑張るので応援していただけると嬉しいです！</p>
     <div class="introText">
       <dl class="info">
-        <div>
+        <div id="areaBlock">
           <dt>活動地域について</dt>
-          <dd>日本国内であればどこへでも行きます</dd>
+          <dd id="areaText">日本国内であればどこへでも行きます</dd>
         </div>
-        <div>
+        <div id="gearBlock">
           <dt>機材について</dt>
-          <dd>イヤモニとかそこらへんがあれば。</dd>
+          <dd id="gearText">イヤモニとかそこらへんがあれば。</dd>
         </div>
       </dl>
 
-      <dl class="info">
-        <div>
+      <dl class="info sub">
+        <div id="scheduleBlock">
           <dt>日程について</dt>
-          <dd>ご連絡をいただいてからなるべく早い返信をすることを心がけています。<br>現在学生であるため、日程等の問題や、上記の通り無償で活動を行っており、交通費等の出費が多いため、金銭的な問題でお話をいただいてもご期待に沿えない場合があるので、その点ご了承ください。</dd>
+          <dd id="scheduleText">ご連絡をいただいてからなるべく早い返信をすることを心がけています。
+現在学生であるため、日程等の問題や、上記の通り無償で活動を行っており、交通費等の出費が多いため、金銭的な問題でお話をいただいてもご期待に沿えない場合があるので、その点ご了承ください。</dd>
         </div>
-        <div>
+        <div id="feeBlock">
           <dt>報酬について</dt>
-          <dd>基本無償。<br>移動費、リハーサル費等も自費で参加させていただきますが、バンドとして一律で報酬を支払っている場合はありがたくいただき、今後の練習等に使用させていただきます。</dd>
+          <dd id="feeText">基本無償。
+移動費、リハーサル費等も自費で参加させていただきますが、バンドとして一律で報酬を支払っている場合はありがたくいただき、今後の練習等に使用させていただきます。</dd>
         </div>
       </dl>
     </div>
-    <div class="portrait img" style="--src:url('images/portrait.jpg')"></div>
-    <ul class="sns">
+    <div class="portrait img" id="portraitImg" style="--src:url('images/portrait.jpg')"></div>
+    <ul class="sns" id="snsList">
       <li><a href="#">X</a></li>
       <li><a href="#">Instagram</a></li>
       <li><a href="#">YouTube</a></li>
     </ul>
-    <p class="meta">連絡先 <b>musashi@example.com</b></p>
+    <p class="meta" id="metaBlock">連絡先 <b id="emailText">musashi@example.com</b></p>
   </div>
 
   <!-- ============ バンド ============ -->
-  <section id="bands">
+  <section id="bandsSection">
     <div class="head"><h2>BANDS</h2><span>メンバーとして在籍</span></div>
 
-    <article class="band">
-      <div class="bandtext">
-        <h3>Emp+ee</h3>
-        <span class="part">2026 — 現在</span>
-        <p>説明-------------------------------------------------------------------------------------------------------</p>
-        <ul class="links">
-          <li><a href="#">Instagram</a></li>
-        </ul>
-      </div>
-      <div class="bandimg img" style="--src:url('images/band-Emp+ee.jpg')"></div>
-    </article>
+    <div id="bandsList">
+      <article class="band">
+        <div class="bandtext">
+          <h3>Emp+ee</h3>
+          <span class="part">2026 — 現在</span>
+          <p>説明-------------------------------------------------------------------------------------------------------</p>
+          <ul class="links">
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
+        <div class="bandimg img" style="--src:url('images/band-Emp+ee.jpg')"></div>
+      </article>
 
-    <article class="band">
-      <div class="bandtext">
-        <h3>Reliance</h3>
-        <span class="part">2022 — 2024</span>
-        <p>説明-------------------------------------------------------------------------------------------------------</p>
-        <ul class="links">
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">X</a></li>
-        </ul>
-      </div>
-      <div class="bandimg img" style="--src:url('images/band-Reliance.jpg')"></div>
-    </article>
+      <article class="band">
+        <div class="bandtext">
+          <h3>Reliance</h3>
+          <span class="part">2022 — 2024</span>
+          <p>説明-------------------------------------------------------------------------------------------------------</p>
+          <ul class="links">
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">X</a></li>
+          </ul>
+        </div>
+        <div class="bandimg img" style="--src:url('images/band-Reliance.jpg')"></div>
+      </article>
+    </div>
 
-  <!-- ============ 帯写真 ============ -->
-  <div class="strip img" style="--src:url('images/live-wide.jpg')"></div>
+    <!-- ============ 帯写真 ============ -->
+    <div class="strip img" id="stripImg" style="--src:url('images/live-wide.jpg')"></div>
+  </section>
 
   <!-- ============ サポート実績 ============ -->
-  <section id="support">
+  <section id="supportSection">
     <div class="head"><h2>SUPPORT</h2><span>サポートで参加</span></div>
-    <div class="support">
+    <div class="support" id="supportList">
       <div><span class="yr">2025</span>バンド1<span class="note">ツアー全12本</span></div>
       <div><span class="yr">2025</span>バンド2<span class="note">レコーディング</span></div>
       <div><span class="yr">2024</span>バンド3<span class="note">対バン企画</span></div>
@@ -109,24 +116,58 @@
     </div>
   </section>
 
-  <!-- ============ ライブ予定（gigs.js のデータから生成） ============ -->
+  <!-- ============ ライブ予定（content.json の gigs から生成） ============ -->
   <section id="schedule">
     <div class="head"><h2>SCHEDULE</h2><span>これから3ヶ月のライブ</span></div>
     <div class="cal" id="cal"></div>
   </section>
 
   <footer>
-    <p class="word">自分は現時点で圧倒的な実力があるわけではありません。<br>
-      しかし、音楽に対して常に真摯に、そして全力委で向き合うことを心がけており、他のバンドメンバーや見に来てくださった方に対してもリスペクトを持って演奏したいと思っています。<br>
-      今の自分を必要としてくださるバンドがいらっしゃいましたら、自分のできる最大限の演奏をさせていただきます。<br>
-      少しでも興味を持っていただけたらご連絡していた抱けると嬉しいです。<br>
-      どうぞよろしくお願いいたします。</p>
+    <p class="word" id="wordText">自分は現時点で圧倒的な実力があるわけではありません。
+しかし、音楽に対して常に真摯に、そして全力委で向き合うことを心がけており、他のバンドメンバーや見に来てくださった方に対してもリスペクトを持って演奏したいと思っています。
+今の自分を必要としてくださるバンドがいらっしゃいましたら、自分のできる最大限の演奏をさせていただきます。
+少しでも興味を持っていただけたらご連絡していた抱けると嬉しいです。
+どうぞよろしくお願いいたします。</p>
     <p class="fine">このページは検索エンジンに登録していません。</p>
   </footer>
 
 </div>
 
-<script src="gigs.js"></script>
+<script>
+/* content.json が無い/壊れている場合のためのビルド時既定値。
+   これがそのまま出ればフォールバック、fetch が成功すれば上書きされる。 */
+var GIGS_DEFAULT = [
+  {d:"2026-09-05",b:"バンド1",e:"深夜の三角形 vol.4",c:"下北沢",v:"ERA",o:"18:30",st:"20:10",n:"3マン"},
+  {d:"2026-09-09",b:"バンド2",e:"GLOW UP TOKYO",c:"渋谷",v:"CYCLONE",o:"19:00",st:"19:40",n:""},
+  {d:"2026-09-12",b:"バンド3",e:"ハルカゼ TOUR 2026",c:"新宿",v:"MARZ",o:"18:00",st:"20:40",n:"サポート"},
+  {d:"2026-09-18",b:"バンド4",e:"NO BASS NIGHT",c:"高円寺",v:"HIGH",o:"19:30",st:"21:00",n:""},
+  {d:"2026-09-20",b:"バンド5",e:"日曜の台所",c:"吉祥寺",v:"WARP",o:"17:00",st:"17:30",n:""},
+  {d:"2026-09-23",b:"バンド1",e:"港の変拍子",c:"横浜",v:"B.B.STREET",o:"18:30",st:"19:50",n:""},
+  {d:"2026-09-27",b:"バンド3",e:"ハルカゼ TOUR 2026",c:"千葉",v:"LOOK",o:"18:00",st:"19:20",n:"サポート"},
+  {d:"2026-10-02",b:"バンド2",e:"あさって以降の話",c:"池袋",v:"Admiral",o:"19:00",st:"20:20",n:""},
+  {d:"2026-10-04",b:"バンド4",e:"一発録りの日",c:"下北沢",v:"THREE",o:"17:30",st:"18:00",n:""},
+  {d:"2026-10-10",b:"バンド1",e:"バンド1 関西ツアー",c:"大阪",v:"Fandango",o:"18:00",st:"19:30",n:"ツアー"},
+  {d:"2026-10-11",b:"バンド1",e:"バンド1 関西ツアー",c:"名古屋",v:"K.D JAPON",o:"18:00",st:"19:10",n:"ツアー"},
+  {d:"2026-10-17",b:"バンド5",e:"土曜のセッション",c:"川越",v:"Music Bar Vino",o:"16:00",st:"16:30",n:"主催"},
+  {d:"2026-10-24",b:"バンド6",e:"バンド6 ワンマン",c:"渋谷",v:"7th FLOOR",o:"19:00",st:"19:30",n:"サポート"},
+  {d:"2026-10-30",b:"バンド4",e:"NO BASS NIGHT",c:"新宿",v:"MARZ",o:"19:30",st:"21:10",n:""},
+  {d:"2026-11-01",b:"バンド2",e:"日曜のポップス",c:"吉祥寺",v:"WARP",o:"17:00",st:"18:20",n:""},
+  {d:"2026-11-07",b:"バンド1",e:"バンド1 ワンマン",c:"下北沢",v:"ERA",o:"18:30",st:"19:00",n:"ワンマン"},
+  {d:"2026-11-08",b:"バンド5",e:"昼のインスト",c:"国分寺",v:"モルガーナ",o:"15:00",st:"15:30",n:""},
+  {d:"2026-11-14",b:"バンド7",e:"WET WET WET",c:"心斎橋",v:"Pangea",o:"18:00",st:"19:40",n:"サポート"},
+  {d:"2026-11-20",b:"バンド4",e:"金曜の轟音",c:"高円寺",v:"HIGH",o:"19:30",st:"20:00",n:""},
+  {d:"2026-11-22",b:"バンド2",e:"となりの声",c:"渋谷",v:"CYCLONE",o:"18:00",st:"19:20",n:"2マン"},
+  {d:"2026-11-28",b:"バンド1",e:"深夜の三角形 vol.5",c:"池袋",v:"Admiral",o:"18:30",st:"20:00",n:""}
+];
+</script>
 <script src="calendar.js"></script>
+<script src="render.js"></script>
+<script>
+renderCalendar(GIGS_DEFAULT);
+fetch("content.json", {cache: "no-store"})
+  .then(function (res) { if (!res.ok) throw new Error("fetch failed"); return res.json(); })
+  .then(function (data) { Site.render(data, document); })
+  .catch(function () { /* 既定値のまま表示を続ける */ });
+</script>
 </body>
 </html>

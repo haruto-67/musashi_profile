@@ -1,5 +1,5 @@
 /* =========================================================
-   相川涼太（ドラマー）個人ページ
+   長谷川武蔵（ドラマー）個人ページ
    配色は「深夜の街灯」— ティールの夜 × ナトリウム灯のアンバー
    ========================================================= */
 
@@ -94,7 +94,7 @@ a{color:inherit}
 .intro .sns{grid-area:sns}
 .intro .meta{grid-area:meta}
 .portrait{aspect-ratio:3/4;border:2px solid var(--ink)}
-.lede{margin:0;max-width:38em;font-size:15.5px}
+.lede{margin:0;max-width:38em;font-size:15.5px;white-space:pre-wrap}
 
 /* 活動地域・報酬（強調） */
 .info{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;margin:24px 0 0}
@@ -103,7 +103,7 @@ a{color:inherit}
   font-family:var(--fdisp);font-weight:600;font-size:12px;letter-spacing:.18em;
   color:var(--accent);margin-bottom:2px
 }
-.info dd{margin:0;font-size:13.5px;line-height:1.75}
+.info dd{margin:0;font-size:13.5px;line-height:1.75;white-space:pre-wrap}
 
 /* 日程・機材（補足） */
 .info.sub{
@@ -147,7 +147,7 @@ section{padding:50px 0;border-bottom:2px solid var(--ink)}
   display:inline-block;margin:10px 0 0;padding:2px 9px;background:var(--accent);color:var(--paper);
   font-size:11px;letter-spacing:.14em;font-family:var(--fdisp);font-weight:600
 }
-.band p{margin:12px 0 0;max-width:38em;font-size:15px}
+.band p{margin:12px 0 0;max-width:38em;font-size:15px;white-space:pre-wrap}
 .links{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0}
 .links a{display:block;padding:4px 12px;border:1.5px solid var(--ink);font-size:13px;text-decoration:none}
 .links a:hover,.links a:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--paper)}
@@ -223,7 +223,7 @@ footer{padding:38px 0 62px}
 .word{
   margin:0 0 22px;max-width:none;padding:2px 0 2px 22px;
   border-left:2px solid var(--accent);
-  font-size:15.5px;font-weight:500;line-height:2.05
+  font-size:15.5px;font-weight:500;line-height:2.05;white-space:pre-wrap
 }
 .fine{margin:0;font-size:12.5px;color:var(--faint)}
 

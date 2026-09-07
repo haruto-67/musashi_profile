@@ -1,0 +1,32 @@
+name: content update
+
+on:
+  repository_dispatch:
+    types: [content-update]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate and write docs/content.json
+        env:
+          CONTENT_JSON: ${{ toJson(github.event.client_payload.content) }}
+        run: node .github/scripts/validate-and-write.js
+
+      - name: Commit if changed
+        run: |
+          git add docs/content.json
+          if git diff --cached --quiet; then
+            echo "No changes, skipping commit."
+            exit 0
+          fi
+          git config user.name "content-bot"
+          git config user.email "actions@users.noreply.github.com"
+          UPDATED_AT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('docs/content.json','utf8')).updatedAt)")
+          git commit -m "content: update via editor ($UPDATED_AT)"
+          git push

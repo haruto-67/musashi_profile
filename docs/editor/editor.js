@@ -648,20 +648,23 @@
     applyGigMonthFilter();
   }
 
-  // ---------- BANDS/SUPPORT/SCHEDULEの折りたたみ（デフォルト畳んだ状態） ----------
+  // ---------- PROFILE/BANDS/SUPPORT/SCHEDULEの折りたたみ（デフォルト畳んだ状態） ----------
   function setupFold(headId, bodyId) {
     var head = document.getElementById(headId);
     var body = document.getElementById(bodyId);
+    var label = head.querySelector(".foldLabel");
     function toggle() {
       var open = body.hidden;
       body.hidden = !open;
       head.setAttribute("aria-expanded", open ? "true" : "false");
+      if (label) label.textContent = open ? "閉じる" : "開く";
     }
     head.addEventListener("click", toggle);
     head.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
     });
   }
+  setupFold("profileHead", "profileBody");
   setupFold("bandsHead", "bandsBody");
   setupFold("supportHead", "supportBody");
   setupFold("gigsHead", "gigsBody");

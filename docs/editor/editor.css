@@ -117,13 +117,24 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
 #snsEditor{grid-area:sns;margin-top:20px}
 .linksEditor{margin-top:14px}
 
-/* ---------- セクション見出しの折りたたみ（BANDS/SUPPORT/SCHEDULE） ----------
+/* ---------- セクション見出しの折りたたみ（PROFILE/BANDS/SUPPORT/SCHEDULE） ----------
    よく編集するのはスケジュールなので、デフォルトは畳んだ状態にしておき、
-   見出しをタップしたら開閉する */
-.foldHead{cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent}
-.foldHead::after{order:1}
-.foldHead .foldIcon{
-  order:2;font-size:13px;color:var(--faint);transition:transform .15s;flex:none
+   見出しをタップしたら開閉する。ただの見出しに見えて押せることが伝わらない
+   という指摘があったため、枠と背景を付けてボタンらしい見た目にし、
+   「開く/閉じる」の文字ラベルも添える */
+.foldHead{
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  align-items:center;padding:12px 14px;margin:0 0 22px;
+  background:var(--panel);border:1px solid var(--rule)
 }
-.foldHead[aria-expanded="true"] .foldIcon{transform:rotate(90deg);color:var(--accent)}
+.foldHead:active{background:rgba(232,166,63,.14);border-color:var(--accent)}
+.foldHead::after{order:1}
+.foldHead .foldLabel{
+  order:2;font-family:var(--fdisp);font-weight:600;font-size:11px;letter-spacing:.1em;
+  color:var(--accent);flex:none;white-space:nowrap;margin-left:6px
+}
+.foldHead .foldIcon{
+  order:3;font-size:14px;color:var(--accent);transition:transform .15s;flex:none;margin-left:2px
+}
+.foldHead[aria-expanded="true"] .foldIcon{transform:rotate(90deg)}
 .foldBody{margin-bottom:10px}

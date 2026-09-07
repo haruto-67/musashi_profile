@@ -40,40 +40,45 @@
 
   <div class="wrap">
 
-    <div class="intro">
-      <p class="lede" id="ledeText" contenteditable="true" data-placeholder="自己紹介"></p>
-      <div class="introText">
-        <dl class="info">
-          <div>
-            <dt>活動地域について</dt>
-            <dd id="areaText" contenteditable="true" data-placeholder="活動地域"></dd>
+    <section>
+      <div class="head foldHead" id="profileHead" role="button" tabindex="0" aria-expanded="false" aria-controls="profileBody"><h2>PROFILE</h2><span>自己紹介・条件・SNS・連絡先</span><span class="foldLabel">開く</span><span class="foldIcon">▸</span></div>
+      <div class="foldBody" id="profileBody" hidden>
+        <div class="intro">
+          <p class="lede" id="ledeText" contenteditable="true" data-placeholder="自己紹介"></p>
+          <div class="introText">
+            <dl class="info">
+              <div>
+                <dt>活動地域について</dt>
+                <dd id="areaText" contenteditable="true" data-placeholder="活動地域"></dd>
+              </div>
+              <div>
+                <dt>機材について</dt>
+                <dd id="gearText" contenteditable="true" data-placeholder="機材"></dd>
+              </div>
+            </dl>
+            <dl class="info">
+              <div>
+                <dt>日程について</dt>
+                <dd id="scheduleText" contenteditable="true" data-placeholder="日程について"></dd>
+              </div>
+              <div>
+                <dt>報酬について</dt>
+                <dd id="feeText" contenteditable="true" data-placeholder="報酬について"></dd>
+              </div>
+            </dl>
           </div>
-          <div>
-            <dt>機材について</dt>
-            <dd id="gearText" contenteditable="true" data-placeholder="機材"></dd>
+          <div class="portrait img imgEdit" id="portraitImg" data-kind="portrait" style="--src:url('../images/portrait.jpg')">
+            <div class="editOverlay">変更</div>
+            <input type="file" accept="image/*">
           </div>
-        </dl>
-        <dl class="info">
-          <div>
-            <dt>日程について</dt>
-            <dd id="scheduleText" contenteditable="true" data-placeholder="日程について"></dd>
-          </div>
-          <div>
-            <dt>報酬について</dt>
-            <dd id="feeText" contenteditable="true" data-placeholder="報酬について"></dd>
-          </div>
-        </dl>
+          <div id="snsEditor"></div>
+          <p class="meta">連絡先 <b id="emailText" contenteditable="true" data-placeholder="メールアドレス"></b></p>
+        </div>
       </div>
-      <div class="portrait img imgEdit" id="portraitImg" data-kind="portrait" style="--src:url('../images/portrait.jpg')">
-        <div class="editOverlay">変更</div>
-        <input type="file" accept="image/*">
-      </div>
-      <div id="snsEditor"></div>
-      <p class="meta">連絡先 <b id="emailText" contenteditable="true" data-placeholder="メールアドレス"></b></p>
-    </div>
+    </section>
 
     <section>
-      <div class="head foldHead" id="bandsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="bandsBody"><h2>BANDS</h2><span>メンバーとして在籍</span><span class="foldIcon">▸</span></div>
+      <div class="head foldHead" id="bandsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="bandsBody"><h2>BANDS</h2><span>メンバーとして在籍</span><span class="foldLabel">開く</span><span class="foldIcon">▸</span></div>
       <div class="foldBody" id="bandsBody" hidden>
         <div id="bandsEditor"></div>
         <button type="button" class="addRowBtn" id="addBandBtn">＋ バンドを追加</button>
@@ -86,7 +91,7 @@
     </section>
 
     <section>
-      <div class="head foldHead" id="supportHead" role="button" tabindex="0" aria-expanded="false" aria-controls="supportBody"><h2>SUPPORT</h2><span>サポートで参加</span><span class="foldIcon">▸</span></div>
+      <div class="head foldHead" id="supportHead" role="button" tabindex="0" aria-expanded="false" aria-controls="supportBody"><h2>SUPPORT</h2><span>サポートで参加</span><span class="foldLabel">開く</span><span class="foldIcon">▸</span></div>
       <div class="foldBody" id="supportBody" hidden>
         <div id="supportEditor"></div>
         <button type="button" class="addRowBtn" id="addSupportBtn">＋ 行を追加</button>
@@ -94,7 +99,7 @@
     </section>
 
     <section>
-      <div class="head foldHead" id="gigsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="gigsBody"><h2>SCHEDULE</h2><span>本番は3ヶ月表示。編集は先の月まで入力できるよう4ヶ月分</span><span class="foldIcon">▸</span></div>
+      <div class="head foldHead" id="gigsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="gigsBody"><h2>SCHEDULE</h2><span>これから3ヶ月のライブ</span><span class="foldLabel">開く</span><span class="foldIcon">▸</span></div>
       <div class="foldBody" id="gigsBody" hidden>
         <div class="calnav" id="gigsMonthNav"></div>
         <div id="gigsEditor"></div>

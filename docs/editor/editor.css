@@ -20,6 +20,9 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
 .authGate button:disabled{opacity:.5;cursor:default}
 .authGate .status{font-size:13px;color:var(--faint);min-height:1.4em}
 .authGate .status.err{color:#ff8b7a}
+/* GitHub APIから直接取得するのでPages/CDNのキャッシュを経由しない＝常に本当の最新を表示できる */
+.authGate .buildInfo{font-size:11px;color:var(--faint);opacity:.7;margin-top:8px}
+.authGate .buildInfo.err{color:#ff8b7a}
 [hidden]{display:none !important}
 
 /* ---------- 編集可能テキスト ---------- */

@@ -62,6 +62,37 @@
     }
   });
 
+  // ---------- 最新コミット情報の表示（ログイン画面。キャッシュ確認用） ----------
+  // Pages/CDNのキャッシュを経由してしまうと「今見ているHTML/JS自体が古いかどうか」は
+  // このコードが動いた時点で確認できない（古いJSがそのまま動いてしまうため）。
+  // なので api.github.com を直接叩き、「GitHub上の実際の最新コミット」を常に表示する。
+  // これは自分が見ているページの新旧に関係なく常に本当の最新を示すので、
+  // ここに出ている日時と自分がpushした時刻を見比べれば「反映されたか」が分かる。
+  (function showBuildInfo() {
+    var el = document.getElementById("buildInfo");
+    if (!el) return;
+    fetch("https://api.github.com/repos/haruto-67/musashi_profile/commits/master", {
+      headers: { Accept: "application/vnd.github+json" }
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("status " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var sha = (data.sha || "").slice(0, 7);
+        var dateStr = data.commit && data.commit.committer && data.commit.committer.date;
+        var d = dateStr ? new Date(dateStr) : null;
+        var formatted = d
+          ? d.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" })
+          : "?";
+        el.textContent = "最新コミット " + sha + "（" + formatted + "）";
+      })
+      .catch(function () {
+        el.textContent = "最新コミット情報を取得できませんでした";
+        el.className = "buildInfo err";
+      });
+  })();
+
   function newCid() {
     cidCounter += 1;
     return "c" + cidCounter + "_" + Date.now().toString(36);

@@ -62,33 +62,33 @@
     }
   });
 
-  // ---------- 最新コミット情報の表示（ログイン画面。キャッシュ確認用） ----------
-  // Pages/CDNのキャッシュを経由してしまうと「今見ているHTML/JS自体が古いかどうか」は
-  // このコードが動いた時点で確認できない（古いJSがそのまま動いてしまうため）。
-  // なので api.github.com を直接叩き、「GitHub上の実際の最新コミット」を常に表示する。
-  // これは自分が見ているページの新旧に関係なく常に本当の最新を示すので、
-  // ここに出ている日時と自分がpushした時刻を見比べれば「反映されたか」が分かる。
+  // ---------- 配信中のページのバージョン表示（ログイン画面。キャッシュ確認用） ----------
+  // api.github.com から最新コミットを取ってきても「GitHub上の最新」が分かるだけで、
+  // 今このブラウザに表示されているHTML/JS自体がPages/CDNのキャッシュで古いままでも
+  // 気づけない（実行されているのが古いJSなら、そのJSはただ「最新」を表示するだけ）。
+  // そこで同じオリジンの docs/build-info.json を、キャッシュを迂回するクエリ付きで
+  // 取得する。このファイルはpushのたびにGitHub Actionsが書き換えて配信されるので、
+  // ここに表示される値が「今Pagesから実際に届いているファイル一式のバージョン」＝
+  // 今見ている編集画面自体が反映されているかの確認になる。
   (function showBuildInfo() {
     var el = document.getElementById("buildInfo");
     if (!el) return;
-    fetch("https://api.github.com/repos/haruto-67/musashi_profile/commits/master", {
-      headers: { Accept: "application/vnd.github+json" }
-    })
+    fetch("../build-info.json?t=" + Date.now(), { cache: "no-store" })
       .then(function (res) {
         if (!res.ok) throw new Error("status " + res.status);
         return res.json();
       })
       .then(function (data) {
-        var sha = (data.sha || "").slice(0, 7);
-        var dateStr = data.commit && data.commit.committer && data.commit.committer.date;
-        var d = dateStr ? new Date(dateStr) : null;
-        var formatted = d
-          ? d.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" })
-          : "?";
-        el.textContent = "最新コミット " + sha + "（" + formatted + "）";
+        if (!data.deployedAt) {
+          el.textContent = "配信バージョン情報はまだありません";
+          return;
+        }
+        var d = new Date(data.deployedAt);
+        var formatted = d.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" });
+        el.textContent = "配信中のバージョン " + data.sha + "（" + formatted + "）";
       })
       .catch(function () {
-        el.textContent = "最新コミット情報を取得できませんでした";
+        el.textContent = "配信バージョン情報を取得できませんでした";
         el.className = "buildInfo err";
       });
   })();

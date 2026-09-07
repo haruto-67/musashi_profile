@@ -1,0 +1,58 @@
+name: build info
+
+# docs/ に変更が入ってmasterにpushされるたびに、そのコミットのSHA・日時を
+# docs/build-info.json に書き込む。編集画面はこのファイルをキャッシュ回避
+# 付きで取得することで「今表示しているページが実際にどのコミットの内容か」を
+# 確認できる（api.github.com から取れる「GitHub上の最新」とは別物で、
+# こちらはPages配信物そのものの鮮度を見るためのファイル）。
+on:
+  push:
+    branches: [master]
+    paths: ["docs/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    # このワークフロー自身が作るコミットで無限ループしないようにガードする
+    if: "!startsWith(github.event.head_commit.message, 'build-info:')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write build-info.json, commit and push (with retry on race)
+        run: |
+          git config user.name "content-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
+
+          for i in 1 2 3 4 5; do
+            DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            cat > docs/build-info.json <<EOF
+          {"sha":"${SHA_SHORT}","fullSha":"${{ github.sha }}","deployedAt":"${DATE}"}
+          EOF
+
+            git add docs/build-info.json
+            if git diff --cached --quiet; then
+              echo "No changes, skipping commit."
+              exit 0
+            fi
+
+            git commit -m "build-info: ${SHA_SHORT} ($DATE)"
+
+            if git push; then
+              echo "pushed on attempt $i"
+              exit 0
+            fi
+
+            echo "push rejected on attempt $i, retrying against latest master..."
+            git reset --hard HEAD~1
+            git fetch origin master
+            git reset --hard origin/master
+            sleep $((i * 2))
+          done
+
+          echo "push failed after retries"
+          exit 1

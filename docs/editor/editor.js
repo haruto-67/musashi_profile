@@ -403,6 +403,7 @@
     part.className = "part";
     var p = ce("p", band.text, "紹介文");
     var linksWrap = document.createElement("div");
+    linksWrap.className = "linksEditor";
     textWrap.appendChild(h3);
     textWrap.appendChild(part);
     textWrap.appendChild(p);
@@ -615,6 +616,24 @@
     buildGigsMonthNav();
     applyGigMonthFilter();
   }
+
+  // ---------- BANDS/SUPPORT/SCHEDULEの折りたたみ（デフォルト畳んだ状態） ----------
+  function setupFold(headId, bodyId) {
+    var head = document.getElementById(headId);
+    var body = document.getElementById(bodyId);
+    function toggle() {
+      var open = body.hidden;
+      body.hidden = !open;
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+  }
+  setupFold("bandsHead", "bandsBody");
+  setupFold("supportHead", "supportBody");
+  setupFold("gigsHead", "gigsBody");
 
   addBandBtn.addEventListener("click", function () {
     var card = makeBandRow({ name: "", since: "", text: "", image: "", links: [] });

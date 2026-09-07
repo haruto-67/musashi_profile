@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>編集 — 長谷川武蔵 Drums</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,27 +72,33 @@
     </div>
 
     <section>
-      <div class="head"><h2>BANDS</h2><span>メンバーとして在籍</span></div>
-      <div id="bandsEditor"></div>
-      <button type="button" class="addRowBtn" id="addBandBtn">＋ バンドを追加</button>
+      <div class="head foldHead" id="bandsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="bandsBody"><h2>BANDS</h2><span>メンバーとして在籍</span><span class="foldIcon">▸</span></div>
+      <div class="foldBody" id="bandsBody" hidden>
+        <div id="bandsEditor"></div>
+        <button type="button" class="addRowBtn" id="addBandBtn">＋ バンドを追加</button>
 
-      <div class="strip img imgEdit" id="stripImg" data-kind="strip" style="--src:url('../images/live-wide.jpg')">
-        <div class="editOverlay">変更</div>
-        <input type="file" accept="image/*">
+        <div class="strip img imgEdit" id="stripImg" data-kind="strip" style="--src:url('../images/live-wide.jpg')">
+          <div class="editOverlay">変更</div>
+          <input type="file" accept="image/*">
+        </div>
       </div>
     </section>
 
     <section>
-      <div class="head"><h2>SUPPORT</h2><span>サポートで参加</span></div>
-      <div id="supportEditor"></div>
-      <button type="button" class="addRowBtn" id="addSupportBtn">＋ 行を追加</button>
+      <div class="head foldHead" id="supportHead" role="button" tabindex="0" aria-expanded="false" aria-controls="supportBody"><h2>SUPPORT</h2><span>サポートで参加</span><span class="foldIcon">▸</span></div>
+      <div class="foldBody" id="supportBody" hidden>
+        <div id="supportEditor"></div>
+        <button type="button" class="addRowBtn" id="addSupportBtn">＋ 行を追加</button>
+      </div>
     </section>
 
     <section>
-      <div class="head"><h2>SCHEDULE</h2><span>本番は3ヶ月表示。編集は先の月まで入力できるよう4ヶ月分</span></div>
-      <div class="calnav" id="gigsMonthNav"></div>
-      <div id="gigsEditor"></div>
-      <button type="button" class="addRowBtn" id="addGigBtn">＋ ライブを追加</button>
+      <div class="head foldHead" id="gigsHead" role="button" tabindex="0" aria-expanded="false" aria-controls="gigsBody"><h2>SCHEDULE</h2><span>本番は3ヶ月表示。編集は先の月まで入力できるよう4ヶ月分</span><span class="foldIcon">▸</span></div>
+      <div class="foldBody" id="gigsBody" hidden>
+        <div class="calnav" id="gigsMonthNav"></div>
+        <div id="gigsEditor"></div>
+        <button type="button" class="addRowBtn" id="addGigBtn">＋ ライブを追加</button>
+      </div>
     </section>
 
     <footer>

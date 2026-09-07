@@ -15,7 +15,6 @@
   var authStatus = document.getElementById("authStatus");
   var editorRoot = document.getElementById("editorRoot");
   var editorBar = document.getElementById("editorBar");
-  var publishPassword = document.getElementById("publishPassword");
   var publishBtn = document.getElementById("publishBtn");
   var editorStatus = document.getElementById("editorStatus");
 
@@ -48,6 +47,9 @@
   var dirty = false;
   var cidCounter = 0;
   var loadedData = null;
+  // 入り口（D-0）で認証に使ったパスワードをページを開いている間だけメモリ上に保持し、
+  // 確定時に使い回す。storage には一切書かないので「保存しない」要件は満たしたまま。
+  var currentPassword = null;
 
   function markDirty() {
     dirty = true;
@@ -457,8 +459,9 @@
     card.appendChild(fr1);
     card.appendChild(fr2);
 
-    d.input.addEventListener("change", function () { resortGigs(); markDirty(); });
-    [b.input, e.input, c.input, v.input, o.input, st.input, n.input].forEach(function (i) {
+    // 編集中は日付を変えても並び替えない（確定時に buildContent() 側でまとめてソートする。
+    // 編集中に行が動くと操作しづらいため、最後に追加したものは確定を押すまで末尾のまま）
+    [d.input, b.input, e.input, c.input, v.input, o.input, st.input, n.input].forEach(function (i) {
       i.addEventListener("input", markDirty);
     });
 
@@ -476,18 +479,10 @@
     };
     return card;
   }
-  function resortGigs() {
-    var cards = Array.from(gigsEditorEl.children);
-    cards.sort(function (ca, cb) {
-      var da = ca.querySelector('input[type=date]').value || "";
-      var db = cb.querySelector('input[type=date]').value || "";
-      return da < db ? -1 : da > db ? 1 : 0;
-    });
-    cards.forEach(function (c) { gigsEditorEl.appendChild(c); });
-  }
 
   // ---------- 画面の組み立て ----------
-  var heroCtl, portraitCtl, stripCtl;
+  // ヘッダー（写真・肩書き・名前）は編集対象外。表示のみで固定
+  var portraitCtl, stripCtl;
 
   function buildEditor(data) {
     loadedData = data;
@@ -495,6 +490,7 @@
     roleText.textContent = p.role || "";
     nameText.textContent = p.name || "";
     nameEnText.textContent = p.nameEn || "";
+    heroShotEl.style.setProperty("--src", "url('" + (p.heroImage || "") + "')");
     ledeText.textContent = p.lede || "";
     areaText.textContent = p.area || "";
     gearText.textContent = p.gear || "";
@@ -503,11 +499,10 @@
     wordText.textContent = p.word || "";
     emailText.textContent = p.email || "";
 
-    [roleText, nameText, nameEnText, ledeText, areaText, gearText, scheduleText, feeText, wordText, emailText].forEach(
-      function (el) { el.addEventListener("input", markDirty); }
-    );
+    [ledeText, areaText, gearText, scheduleText, feeText, wordText, emailText].forEach(function (el) {
+      el.addEventListener("input", markDirty);
+    });
 
-    heroCtl = setupImageField(heroShotEl, p.heroImage, "hero");
     portraitCtl = setupImageField(portraitImgEl, p.portraitImage, "portrait");
     stripCtl = setupImageField(stripImgEl, data.stripImage, "strip");
 
@@ -548,7 +543,6 @@
   // ---------- 送信内容の組み立て（D-6） ----------
   function collectImageJobs() {
     var jobs = [];
-    if (pendingImages.hero) jobs.push({ key: "hero", blob: pendingImages.hero });
     if (pendingImages.portrait) jobs.push({ key: "portrait", blob: pendingImages.portrait });
     if (pendingImages.strip) jobs.push({ key: "strip", blob: pendingImages.strip });
     Array.from(bandsEditorEl.children).forEach(function (card) {
@@ -559,10 +553,13 @@
   }
 
   function buildContent(resolved) {
+    var loadedProfile = (loadedData && loadedData.profile) || {};
     var profile = {
-      name: nameText.textContent.trim(),
-      nameEn: nameEnText.textContent.trim(),
-      role: roleText.textContent.trim(),
+      // 名前・肩書き・ヘッダー写真は編集対象外なので、読み込んだ値をそのまま使う
+      name: loadedProfile.name || "",
+      nameEn: loadedProfile.nameEn || "",
+      role: loadedProfile.role || "",
+      heroImage: loadedProfile.heroImage || "",
       lede: ledeText.textContent,
       area: areaText.textContent,
       gear: gearText.textContent,
@@ -571,7 +568,6 @@
       word: wordText.textContent,
       email: emailText.textContent.trim(),
       sns: readLinks(snsEditorEl),
-      heroImage: resolved.hero || heroCtl.currentPath(),
       portraitImage: resolved.portrait || portraitCtl.currentPath()
     };
     var stripImage = resolved.strip || stripCtl.currentPath();
@@ -608,9 +604,8 @@
   }
 
   publishBtn.addEventListener("click", async function () {
-    var password = publishPassword.value;
-    if (!password) {
-      setStatus("パスワードを入力してください", "err");
+    if (!currentPassword) {
+      setStatus("ログインし直してください", "err");
       return;
     }
     setBarBusy(true);
@@ -619,11 +614,11 @@
       var resolved = {};
       for (var i = 0; i < jobs.length; i++) {
         setStatus("画像をアップロード中… (" + (i + 1) + "/" + jobs.length + ")");
-        resolved[jobs[i].key] = await uploadImage(jobs[i].key, jobs[i].blob, password);
+        resolved[jobs[i].key] = await uploadImage(jobs[i].key, jobs[i].blob, currentPassword);
       }
       setStatus("送信中…");
       var content = buildContent(resolved);
-      var res = await callAppsScript("publish", content, password);
+      var res = await callAppsScript("publish", content, currentPassword);
       if (res && res.ok) {
         dirty = false;
         setStatus("反映しました。反映まで1分ほどかかります。", "ok");
@@ -658,6 +653,7 @@
     try {
       var res = await callAppsScript("auth", {}, password);
       if (res && res.ok) {
+        currentPassword = password;
         await loadAndBuildEditor();
         authGate.hidden = true;
         editorRoot.hidden = false;

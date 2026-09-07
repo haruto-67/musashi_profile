@@ -84,10 +84,6 @@ body{padding-bottom:64px}
   position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper);border-top:2px solid var(--ink);
   padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap
 }
-.editorBar input[type=password]{
-  flex:1;min-width:160px;font:inherit;font-size:14px;background:var(--panel);color:var(--ink);
-  border:1.5px solid var(--ink);padding:8px 10px
-}
 .editorBar button{
   font-family:var(--fdisp);font-weight:600;letter-spacing:.08em;font-size:14px;
   background:var(--accent);color:var(--paper);border:0;padding:9px 22px;cursor:pointer

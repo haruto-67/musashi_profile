@@ -96,7 +96,7 @@ a{color:inherit}
 .portrait{aspect-ratio:3/4;border:2px solid var(--ink)}
 .lede{margin:0;max-width:38em;font-size:15.5px;white-space:pre-wrap}
 
-/* 活動地域・報酬（強調） */
+/* 活動地域・機材・日程・報酬。すべて同じ見た目 */
 .info{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;margin:24px 0 0}
 .info div{border-top:2px solid var(--accent);padding-top:9px}
 .info dt{
@@ -104,15 +104,6 @@ a{color:inherit}
   color:var(--accent);margin-bottom:2px
 }
 .info dd{margin:0;font-size:13.5px;line-height:1.75;white-space:pre-wrap}
-
-/* 日程・機材（補足） */
-.info.sub{
-  margin-top:18px;padding:14px 0;gap:12px 30px;
-  border-top:var(--dash);border-bottom:var(--dash)
-}
-.info.sub div{border-top:0;padding-top:0}
-.info.sub dt{color:var(--faint);letter-spacing:.16em;font-size:11px}
-.info.sub dd{font-size:13px;color:#C7C3BA}
 
 .sns{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0}
 .sns a{
@@ -233,7 +224,7 @@ footer{padding:38px 0 62px}
 @media(max-width:760px){
   .hero{min-height:72vh}
   .intro{grid-template-columns:1fr 100px;grid-template-areas:"lede portrait" "rest rest" "sns sns" "meta meta";gap:0 16px}
-  .info,.info.sub{grid-template-columns:1fr}
+  .info{grid-template-columns:1fr}
   .band{grid-template-columns:1fr}
   .bandimg{aspect-ratio:16/9;order:-1}
   .support{columns:1}

@@ -141,3 +141,6 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
 }
 .foldHead[aria-expanded="true"] .foldIcon{transform:rotate(90deg)}
 .foldBody{margin-bottom:10px}
+/* .intro は本体側デザインで border-bottom を持つが、編集画面ではPROFILE見出しの
+   箱（枠線）がすぐ下に続くため、線が二本並んで見えてしまう。編集画面では消す */
+#profileBody .intro{border-bottom:0}

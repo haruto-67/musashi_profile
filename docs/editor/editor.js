@@ -52,6 +52,24 @@
   // 確定時に使い回す。storage には一切書かないので「保存しない」要件は満たしたまま。
   var currentPassword = null;
 
+  // モバイルブラウザ（特にChrome）はアドレスバーが展開されている間、
+  // レイアウトビューポート（window.innerHeight）と実際に見えている範囲
+  // （window.visualViewport）がずれることがあり、env(safe-area-inset-bottom)
+  // だけでは補いきれず position:fixed;bottom:0 のバーが下に隙間を空けて
+  // 浮いて見える。visualViewportを監視して、そのずれの分だけbottomを
+  // 足して常に画面の実際の下端に張り付くようにする。
+  (function pinBarToVisualViewport() {
+    var vv = window.visualViewport;
+    if (!vv) return;
+    function update() {
+      var gap = window.innerHeight - vv.height - vv.offsetTop;
+      editorBar.style.bottom = Math.max(0, Math.round(gap)) + "px";
+    }
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    update();
+  })();
+
   function markDirty() {
     dirty = true;
   }

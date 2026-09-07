@@ -88,6 +88,8 @@ a{color:inherit}
   grid-template-areas:"lede portrait" "rest portrait" "sns sns" "meta meta";
   padding:8px 0 42px;border-bottom:2px solid var(--ink)
 }
+/* グリッド項目内の長い文字列がトラック幅を押し広げて横スクロールを起こさないように */
+.intro>*{min-width:0}
 .intro .lede{grid-area:lede}
 .intro .introText{grid-area:rest}
 .intro .portrait{grid-area:portrait;align-self:center}
@@ -98,7 +100,7 @@ a{color:inherit}
 
 /* 活動地域・機材・日程・報酬。すべて同じ見た目 */
 .info{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;margin:24px 0 0}
-.info div{border-top:2px solid var(--accent);padding-top:9px}
+.info>div{border-top:2px solid var(--accent);padding-top:9px;min-width:0}
 .info dt{
   font-family:var(--fdisp);font-weight:600;font-size:12px;letter-spacing:.18em;
   color:var(--accent);margin-bottom:2px
@@ -131,6 +133,7 @@ section{padding:50px 0;border-bottom:2px solid var(--ink)}
   display:grid;grid-template-columns:1fr 168px;gap:24px;align-items:start;
   padding:26px 0;border-top:var(--dash)
 }
+.band>*{min-width:0}
 .band:first-of-type{border-top:0;padding-top:0}
 .bandimg{aspect-ratio:1;border:2px solid var(--ink)}
 .band h3{font-family:var(--fdisp);font-weight:600;font-size:clamp(28px,7vw,48px);line-height:1;margin:0}

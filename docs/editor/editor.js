@@ -37,6 +37,7 @@
   var bandsEditorEl = document.getElementById("bandsEditor");
   var supportEditorEl = document.getElementById("supportEditor");
   var gigsEditorEl = document.getElementById("gigsEditor");
+  var gigsMonthNavEl = document.getElementById("gigsMonthNav");
 
   var addBandBtn = document.getElementById("addBandBtn");
   var addSupportBtn = document.getElementById("addSupportBtn");
@@ -280,11 +281,48 @@
   }
 
   // ---------- 汎用パーツ ----------
-  function ce(tag, text, placeholder) {
+
+  /**
+   * contenteditable の Enter キーは、ブラウザが素の "\n" ではなく新しい <div> を
+   * 挿入する（execCommand('insertText','\n') で回避しようとしても、Chromeは
+   * 内部でこれも改段落として扱ってしまい効果がない）。単一行の欄では Enter 自体を
+   * 無効化し、複数行の欄ではブラウザの挙動に任せて、読み出し側の getPlainText() で
+   * <div>/<br> を "\n" に正しく変換する（下記）。
+   * ペーストは書式を持ち込ませないよう、プレーンテキストのみ挿入する。
+   */
+  function plainTextEditable(el, multiline) {
+    if (!multiline) {
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") e.preventDefault();
+      });
+    }
+    el.addEventListener("paste", function (e) {
+      e.preventDefault();
+      var text = (e.clipboardData || window.clipboardData).getData("text/plain");
+      document.execCommand("insertText", false, text);
+    });
+  }
+
+  /**
+   * 複数行のcontenteditableの中身を、改行を保った素のテキストとして取り出す。
+   * Enterで増えた <div>/<br> を "\n" に変換してから読む。
+   */
+  function getPlainText(el) {
+    var html = el.innerHTML
+      .replace(/<div[^>]*>/gi, "\n")
+      .replace(/<\/div>/gi, "")
+      .replace(/<br\s*\/?>/gi, "\n");
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent.replace(/^\n/, "");
+  }
+
+  function ce(tag, text, placeholder, multiline) {
     var el = document.createElement(tag);
     el.contentEditable = "true";
     el.textContent = text || "";
     if (placeholder) el.dataset.placeholder = placeholder;
+    plainTextEditable(el, multiline);
     return el;
   }
   function fieldInput(label, value, type) {
@@ -352,17 +390,15 @@
       })
     );
 
+    // 本番の .band / .bandtext / .bandimg をそのまま使う（スマホ用の @media 込みで
+    // 効かせるため。ここでインラインstyleを当てるとメディアクエリより優先されて
+    // レスポンシブが効かなくなる）
     var grid = document.createElement("div");
-    grid.style.display = "grid";
-    grid.style.gridTemplateColumns = "1fr 168px";
-    grid.style.gap = "16px";
-    grid.style.alignItems = "start";
+    grid.className = "band";
 
     var textWrap = document.createElement("div");
+    textWrap.className = "bandtext";
     var h3 = ce("h3", band.name, "バンド名");
-    h3.style.fontFamily = "var(--fdisp)";
-    h3.style.fontWeight = "600";
-    h3.style.fontSize = "clamp(22px,5vw,34px)";
     var part = ce("span", band.since, "在籍期間（例 2024 — 現在）");
     part.className = "part";
     var p = ce("p", band.text, "紹介文");
@@ -398,7 +434,7 @@
       return {
         name: h3.textContent.trim(),
         since: part.textContent.trim(),
-        text: p.textContent,
+        text: getPlainText(p),
         links: readLinks(linksWrap)
       };
     };
@@ -464,6 +500,8 @@
     [d.input, b.input, e.input, c.input, v.input, o.input, st.input, n.input].forEach(function (i) {
       i.addEventListener("input", markDirty);
     });
+    // 表示/非表示は変えない（編集中に消えると困る）が、タブの本数バッジだけは最新化する
+    d.input.addEventListener("change", function () { buildGigsMonthNav(); });
 
     card._read = function () {
       return {
@@ -478,6 +516,56 @@
       };
     };
     return card;
+  }
+
+  // ---------- スケジュールの月タブ ----------
+  // 本番のカレンダーは今月から3ヶ月分しか表示しないが、月替わり直後に空にならないよう
+  // 編集側は1ヶ月分先まで、今月から4ヶ月ぶんタブを出す。
+  var GIGS_TAB_MONTHS = 4;
+  var activeGigMonth = 0; // タブのインデックス（0=今月）
+
+  function gigMonthKey(offset) {
+    var now = new Date();
+    var d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+  }
+  function gigCardMonthKey(card) {
+    return card.querySelector('input[type=date]').value.slice(0, 7);
+  }
+
+  function buildGigsMonthNav() {
+    gigsMonthNavEl.innerHTML = "";
+    var cards = Array.from(gigsEditorEl.children);
+    for (var i = 0; i < GIGS_TAB_MONTHS; i++) {
+      var now = new Date();
+      var d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      var key = gigMonthKey(i);
+      var count = cards.filter(function (c) { return gigCardMonthKey(c) === key; }).length;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "mbtn" + (i === activeGigMonth ? " is-on" : "");
+      btn.innerHTML = (d.getMonth() + 1) + "月<i>" + count + "本</i>";
+      (function (i) {
+        btn.addEventListener("click", function () {
+          activeGigMonth = i;
+          buildGigsMonthNav();
+          applyGigMonthFilter();
+        });
+      })(i);
+      gigsMonthNavEl.appendChild(btn);
+    }
+  }
+
+  function applyGigMonthFilter() {
+    var activeKey = gigMonthKey(activeGigMonth);
+    var currentKey = gigMonthKey(0);
+    Array.from(gigsEditorEl.children).forEach(function (card) {
+      var key = gigCardMonthKey(card);
+      // 日付未入力・過去分（今月より前）はどのタブでも常に表示。
+      // それ以外はタブの月と一致するものだけ表示する。
+      var visible = !key || key < currentKey || key === activeKey;
+      card.hidden = !visible;
+    });
   }
 
   // ---------- 画面の組み立て ----------
@@ -502,6 +590,10 @@
     [ledeText, areaText, gearText, scheduleText, feeText, wordText, emailText].forEach(function (el) {
       el.addEventListener("input", markDirty);
     });
+    [ledeText, areaText, gearText, scheduleText, feeText, wordText].forEach(function (el) {
+      plainTextEditable(el, true);
+    });
+    plainTextEditable(emailText, false);
 
     portraitCtl = setupImageField(portraitImgEl, p.portraitImage, "portrait");
     stripCtl = setupImageField(stripImgEl, data.stripImage, "strip");
@@ -519,6 +611,9 @@
       .slice()
       .sort(function (a, b2) { return a.d < b2.d ? -1 : a.d > b2.d ? 1 : 0; })
       .forEach(function (g) { gigsEditorEl.appendChild(makeGigRow(g)); });
+    activeGigMonth = 0;
+    buildGigsMonthNav();
+    applyGigMonthFilter();
   }
 
   addBandBtn.addEventListener("click", function () {
@@ -536,6 +631,8 @@
   addGigBtn.addEventListener("click", function () {
     var card = makeGigRow({ d: "", b: "", e: "", c: "", v: "", o: "", st: "", n: "" });
     gigsEditorEl.appendChild(card);
+    // 日付未入力の新規行は常に表示対象なので、タブ表示（本数バッジ）だけ更新する
+    buildGigsMonthNav();
     card.querySelector('input[type=date]').focus();
     markDirty();
   });
@@ -560,12 +657,12 @@
       nameEn: loadedProfile.nameEn || "",
       role: loadedProfile.role || "",
       heroImage: loadedProfile.heroImage || "",
-      lede: ledeText.textContent,
-      area: areaText.textContent,
-      gear: gearText.textContent,
-      schedulePolicy: scheduleText.textContent,
-      fee: feeText.textContent,
-      word: wordText.textContent,
+      lede: getPlainText(ledeText),
+      area: getPlainText(areaText),
+      gear: getPlainText(gearText),
+      schedulePolicy: getPlainText(scheduleText),
+      fee: getPlainText(feeText),
+      word: getPlainText(wordText),
       email: emailText.textContent.trim(),
       sns: readLinks(snsEditorEl),
       portraitImage: resolved.portrait || portraitCtl.currentPath()

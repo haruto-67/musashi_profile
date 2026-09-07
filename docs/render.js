@@ -47,6 +47,8 @@
       var a = document.createElement("a");
       a.textContent = item.label;
       a.href = item.url || "#";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
       li.appendChild(a);
       container.appendChild(li);
     });

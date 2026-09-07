@@ -130,7 +130,13 @@ function canonicalJSON(value) {
 }
 
 function hmacHex(secret, message) {
-  var raw = Utilities.computeHmacSha256Signature(message, secret);
+  // message は日本語（マルチバイト文字）を含む。文字列のまま渡すと
+  // Utilities.computeHmacSha256Signature の暗黙の文字コード変換に依存してしまい、
+  // ブラウザ側（常にUTF-8）と一致しなくなることがあるため、必ず明示的に
+  // UTF-8バイト列に変換してから渡す。
+  var messageBytes = Utilities.newBlob(message, "text/plain", "utf-8").getBytes();
+  var keyBytes = Utilities.newBlob(secret, "text/plain", "utf-8").getBytes();
+  var raw = Utilities.computeHmacSha256Signature(messageBytes, keyBytes);
   return raw
     .map(function (b) {
       var v = (b + 256) % 256;

@@ -1,92 +1,91 @@
-# /editor を動かすための外部設定手順
+# /editor の外部設定（完了済み・リファレンス）
 
-README.md の追記部分（本人が更新できる仕組み）のうち、コード側の実装は完了している。
-残っているのはGoogle/GitHub側の手動設定のみ。ここに書いてあることを順番にやれば動く。
+**2026-09-07 にセットアップ完了。** 以下は実際にやった手順の記録。再デプロイやトラブル対応の際に参照する。
 
-作業できるタイミングでこのファイルの上から順に進めればOK。終わったらチェックを付ける。
-
----
-
-## 0. 前提
+## 0. 前提・現在の状態
 
 - リポジトリ: `haruto-67/musashi_profile`（public）
 - Pages公開ルート: `docs/`（カスタムドメイン `www.musashi-drums.com` 設定済み）
-- Apps Script用のパスワード（`HMAC_SECRET`）: **このセットアップを依頼したチャットのメッセージに直接貼ってある。** このファイルには書かない（publicリポジトリにコミットされるため）。まだ控えていなければ、そのメッセージを見て別途メモしておくこと（LINEで本人に送る運用は README.md の運用の取り決め通り）。
+- Apps Script アカウント: `haruto.hym.67@gmail.com`（**MCPのGoogleドライブコネクタとは別アカウント**）
+- Apps Script プロジェクト: `appsscript/.clasp.json` の `scriptId` を参照。ローカルでは `cd appsscript && npx @google/clasp open` で開ける（要 `clasp login` 済み）
+- デプロイ済みウェブアプリURL: `docs/editor/editor.js` の `APPS_SCRIPT_URL` に設定済み
+- スクリプトプロパティ（`HMAC_SECRET` / `GITHUB_REPO` / `GITHUB_TOKEN`）: 設定済み。値はここには書かない（publicリポジトリのため）
+- 実機で `auth` / `uploadImage` / `publish` の一連の流れを確認済み（README.md I節・J節参照）
 
-## 1. Google Apps Script プロジェクトを作る
+## やったことの記録
 
-- [ ] https://script.google.com を開き、「新しいプロジェクト」を作成
-- [ ] プロジェクト名は分かればなんでもいい（例: `musashi-profile-editor`）
-- [ ] エディタ左の `appsscript.json` を表示する（表示されていなければ、歯車アイコンの「プロジェクトの設定」→「"appsscript.json" マニフェスト ファイルをエディタで表示する」にチェック）
-- [ ] このリポジトリの `appsscript/appsscript.json` の中身をそのままコピーして貼り付け、保存
-- [ ] `Code.gs`（デフォルトで存在するファイル）の中身を全部消して、このリポジトリの `appsscript/Code.gs` の中身をそのままコピーして貼り付け、保存
+### 1. Apps Script プロジェクトの作成・コード配置（`clasp` 使用）
 
-## 2. スクリプトプロパティを設定する
+Web UIで手動コピペする代わりに、Google公式CLI「clasp」でプロジェクト作成〜コード配置〜デプロイまでを自動化した。
 
-エディタ左の歯車アイコン →「プロジェクトの設定」→ 下の方の「スクリプト プロパティ」→「スクリプト プロパティを追加」で、以下を1つずつ追加する。
-
-| プロパティ | 値 |
-|---|---|
-| `HMAC_SECRET` | チャットのメッセージに貼ってある文字列をそのまま |
-| `GITHUB_REPO` | `haruto-67/musashi_profile` |
-| `GITHUB_TOKEN` | 手順3で作る fine-grained PAT（まだ無ければ後で追加でOK） |
-
-`LAST_TS` や `*_WINDOW` / `*_COUNT` はコードが自動で作るので、手で追加しなくていい。
-
-- [ ] `HMAC_SECRET` を設定した
-- [ ] `GITHUB_REPO` を設定した
-- [ ] `GITHUB_TOKEN` を設定した（手順3の後でOK）
-
-## 3. GitHub の fine-grained PAT を発行する
-
-GitHub側の仕様上、これはAPIから自動生成できない。手動でやる必要がある。
-
-- [ ] https://github.com/settings/personal-access-tokens/new を開く（要ログイン: haruto-67）
-- [ ] Token name: 分かればなんでもいい（例: `musashi-profile-editor`）
-- [ ] Expiration: 最長（1年）を選ぶ。**期限日をカレンダーに登録しておくこと**（切れると無言で動かなくなる。README.md H節参照）
-- [ ] Repository access: 「Only select repositories」→ `musashi_profile` を選ぶ
-- [ ] Permissions → Repository permissions → **Contents: Read and write** のみ ON にする（他は全部 No access のまま）
-- [ ] 「Generate token」を押して、表示されたトークン（`github_pat_...`）をコピー
-- [ ] Apps Script のスクリプトプロパティ `GITHUB_TOKEN` に貼り付ける（**このリポジトリのどのファイルにも書かないこと**）
-
-## 4. ウェブアプリとしてデプロイする
-
-- [ ] Apps Script エディタ右上の「デプロイ」→「新しいデプロイ」
-- [ ] 種類の選択で「ウェブアプリ」を選ぶ
-- [ ] 「次のユーザーとして実行」: **自分（オーナー）**
-- [ ] 「アクセスできるユーザー」: **全員**
-- [ ] 「デプロイ」を押す。初回は Google の権限確認画面が出るので許可する
-- [ ] 発行された「ウェブアプリのURL」（`https://script.google.com/macros/s/.../exec` の形）をコピー
-
-## 5. エディタ側にURLを設定する
-
-- [ ] `docs/editor/editor.js` の先頭付近、`var APPS_SCRIPT_URL = "REPLACE_WITH_DEPLOYED_APPS_SCRIPT_URL";` を、手順4でコピーしたURLに書き換える
-- [ ] コミットして push する
-
-```js
-var APPS_SCRIPT_URL = "https://script.google.com/macros/s/xxxxxxxx/exec";
+```bash
+npx @google/clasp login          # ブラウザでGoogle認証（このMac本体でのみ完結する）
+cd appsscript
+npx @google/clasp create --type webapp --title "musashi-profile-editor"
+# → scriptId が発行され appsscript/.clasp.json ができる
+npx @google/clasp push -f        # Code.gs / appsscript.json をアップロード
 ```
 
-**コードを直したら「新しいデプロイ」ではなく、既存デプロイを編集して新バージョンを配備すること。** URLを変えずに更新できる（README.md F節「つまずきやすい点」参照）。
+**つまずいた点：`clasp login` のブラウザは、コマンドを実行しているのと同じマシンで開く必要がある。** ログインの最後に `http://localhost:<port>/...` へリダイレクトされるが、これは「今それを開いている端末自身」を指すため、スマホなど別端末で開くと繋がらない。
 
-## 6. 通しで動作確認する
+**つまずいた点：Node の DNS 解決順。** このMacでは `localhost` がIPv6優先で解決され、`clasp login` の待受サーバーがIPv4からの接続を受け付けない状態になったことがあった。`NODE_OPTIONS="--dns-result-order=ipv4first"` を付けて再実行して解決した。
 
-`https://www.musashi-drums.com/editor/` を開いて、README.md の J節チェックリストを一通り確認する。
+### 2. スクリプトプロパティの設定
 
-- [ ] 間違ったパスワードで送ったとき、画面にエラーが出る（GitHubには何も起きない）
-- [ ] 正しいパスワードで入れる
-- [ ] パスワードを10回間違えたあと、正しいパスワードでも1時間は入れない
-- [ ] 1回間違えた直後に正しく入力し直すと、そのまま入れる
-- [ ] 文章を編集して確定 → 1分以内に `https://www.musashi-drums.com/` に反映される
-- [ ] 写真を差し替えて確定 → `docs/images/` に新しいファイルが増えている（GitHubのコミット履歴で確認できる）
-- [ ] スマホで撮った縦写真が、縦のまま正しい向きで表示される
-- [ ] バンド・サポート・ライブの追加/削除/並べ替えができる
-- [ ] Apps Script を一時的に止める（デプロイを無効化する等）と、`www.musashi-drums.com` 自体は通常どおり表示される
-- [ ] `docs/CNAME` と `docs/.nojekyll` が消えていない（Actionsのコミット履歴で確認）
+Apps Script エディタ（`clasp open` で開ける）→ 歯車アイコン →「プロジェクトの設定」→「スクリプト プロパティ」で手動設定（ここはAPIから自動化できない）。
+
+| プロパティ | 中身 |
+|---|---|
+| `HMAC_SECRET` | チャットで生成して渡した強いランダム値 |
+| `GITHUB_REPO` | `haruto-67/musashi_profile` |
+| `GITHUB_TOKEN` | 手順3のfine-grained PAT |
+
+### 3. GitHub fine-grained PAT の発行
+
+https://github.com/settings/personal-access-tokens/new から手動発行（GitHub側にAPIが無いため自動化不可）。
+
+- Repository access: `musashi_profile` のみ
+- Permissions: **Contents: Read and write** のみ
+- Expiration: 最長（1年）。**期限日をカレンダーに登録しておくこと**（切れると無言で動かなくなる。README.md H節参照）
+
+### 4. デプロイ（ここで見つかった問題）
+
+最初 `npx @google/clasp deploy` でデプロイしたが、**`clasp deploy`（Apps Script API経由）で作ったデプロイは「アクセスできるユーザー：全員」が正しく反映されず**、未ログインのリクエストに対して「アクセス権が必要です」というDriveの共有リクエスト画面が返ってきた。
+
+**対処：Apps Script エディタの Web UI から手動で「デプロイ」→「新しいデプロイ」を実行し直した。** 種類「ウェブアプリ」、実行ユーザー「自分」、アクセス「全員」を選ぶと正しく公開された。CLIだけで完結させようとせず、最終的な公開設定はUIで確認するのが確実。
+
+コードを修正した後の再デプロイは `clasp push` → `clasp deploy -i <既存のdeploymentId>` で、URLを変えずに新バージョンを配備できる（これはAPI経由でも問題なく機能した。動かなかったのは「アクセスできるユーザー」の設定だけ）。
+
+### 5. 実機テストで見つけたバグ（修正済み）
+
+`auth`（空データ）の署名検証は最初から通ったが、日本語を含む `publish` のペイロードだけ `bad_signature` になった。原因と修正はREADME.md のE節末尾を参照（`Utilities.computeHmacSha256Signature` に渡す文字列はUTF-8バイト列に明示変換する必要があった）。
+
+## 今後の運用
+
+### パスワード（HMAC_SECRET）を変更したいとき
+
+1. Apps Script のスクリプトプロパティで `HMAC_SECRET` を新しい値に変更
+2. 本人にLINEで新しいパスワードを送る（README.md 運用の取り決め通り）
+
+### コードを直したとき
+
+```bash
+cd appsscript
+npx @google/clasp push -f
+npx @google/clasp deploy -i <既存のdeploymentId> -d "変更内容の説明"
+```
+
+`clasp deployments` で現在有効なデプロイ一覧とIDを確認できる。**新しいデプロイ（`clasp deploy` を `-i` 無しで実行）は作らないこと。** URLが変わってしまい、`docs/editor/editor.js` 側の更新も必要になる。
+
+### GitHubトークンの期限が切れたら
+
+1. https://github.com/settings/personal-access-tokens/new で新しいfine-grained PATを再発行（手順3と同じ条件）
+2. Apps Script のスクリプトプロパティ `GITHUB_TOKEN` を更新
 
 ## うまく動かないとき
 
-- **「ログイン画面のHTMLが返ってJSONパースで落ちる」** → デプロイの「アクセスできるユーザー」が「全員」になっているか確認
-- **「コードを直したのに反映されない」** → 新しいデプロイではなく、既存デプロイの編集で新バージョンを配備したか確認
+- **「アクセス権が必要です」という共有リクエスト画面が返る** → デプロイの「アクセスできるユーザー」が「全員」になっていない。Web UIから「新しいデプロイ」をやり直す（上記4節）
+- **日本語を含むデータだけ `bad_signature` になる** → `hmacHex` がUTF-8バイト変換をしているか確認（上記5節。修正済みのはず）
+- **「コードを直したのに反映されない」** → `clasp deploy` に `-i <deploymentId>` を付け忘れて新しいデプロイを作ってしまっていないか確認
 - **`repository_dispatch` は来るのに `docs/content.json` が更新されない** → GitHub の Actions タブでワークフロー `content update` のログを見る。スキーマ検証（`.github/scripts/validate-and-write.js`）で弾かれている可能性が高い
 - **画像だけアップロードされない** → `GITHUB_TOKEN` の権限が `Contents: Read and write` になっているか、期限切れになっていないか確認

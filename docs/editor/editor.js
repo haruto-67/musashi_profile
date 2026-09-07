@@ -4,7 +4,7 @@
   "use strict";
 
   // ===== デプロイ後にここを書き換える ==========================================
-  var APPS_SCRIPT_URL = "REPLACE_WITH_DEPLOYED_APPS_SCRIPT_URL";
+  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp8xjrLzal19iRr-1Pe2oLn2jG59LiCHau2qZd3XyxM9KGpS5fIi4cl2MTnZzn7Mxywg/exec";
   // ============================================================================
 
   // ---------- 要素参照 ----------

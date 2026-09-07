@@ -161,7 +161,7 @@
 **ここから下は 2026-09-07 に追記した分。**
 上の 1〜8 節は実装済みの静的ページについての記述で、この節はそこに「本人が自分で内容を更新できる仕組み」を足すための仕様。
 
-**実装状況（2026-09-07 時点）：コード側は実装済み。** `docs/content.json`・`docs/render.js`・`docs/editor/`（`index.html`/`editor.js`/`editor.css`）・`appsscript/`（`Code.gs`/`appsscript.json`）・`.github/workflows/content-update.yml`・`.github/scripts/validate-and-write.js` が揃っている。クライアント側（content.jsonの読み込み・描画、エディタのUI、HMAC署名、画像の縮小・向き補正）は、Code.gsと同じ検証ロジックを持つローカルのモックサーバーに対して実際にブラウザ（Playwright）で操作して疎通確認済み。**残っているのは Google Apps Script のプロジェクト作成・デプロイと、GitHubのfine-grained PAT発行という外部サービス側の手動設定のみ。** 手順は `SETUP.md` にまとめてある。作業できるタイミングでそちらを進めること。
+**実装状況（2026-09-07 時点）：コードと外部設定の両方が完了し、実機で `auth`/`uploadImage`/`publish` の一連の流れを確認済み。** Google Apps Script のデプロイ（`clasp` 経由。Web UIで最終確定）、GitHubのfine-grained PAT発行、スクリプトプロパティ設定はすべて完了している。デプロイ済みのウェブアプリURLは `docs/editor/editor.js` の `APPS_SCRIPT_URL` に設定済み。詳しい経緯・見つかったバグは I節末尾の「実機テストで見つかったバグ」を参照。**未確認なのは `/editor` のUIを実際にスマホ・PCのブラウザで操作しての通し確認のみ**（API直叩きでの疎通は確認済み）。`SETUP.md` は今後 Apps Script の再デプロイやトラブル対応が要る時のリファレンスとして残してある。
 
 **実装時の前提：この節に出てくるパスはすべて `docs/` 配下を指す。** 例えば「`content.json`」は `docs/content.json`、「`/editor`」は `docs/editor/`、「`images/`」は `docs/images/` のこと。4節の通り公開ルートが `docs/` であるため、GitHub Contents API でファイルを書き込む際のリポジトリ内パスにも必ず `docs/` を付ける（`index.html` 側から見た相対パス表記である `images/xxx.jpg` 自体は `docs/` プレフィックスを付けない、という点と混同しないこと）。この区別は `appsscript/Code.gs` の `handleUploadImage` で実装済み。
 
@@ -406,6 +406,8 @@
 > ここが実装でいちばん事故る箇所。キー順や空白が1文字ずれるだけで検証が通らない。
 > **正規化関数は1つのファイルに書いて、エディタと Apps Script の両方から同じものを使うこと。**
 > 実装したら、既知の入力に対する期待値をテストケースとして残す。
+>
+> **実装して分かった落とし穴：文字コード。** Apps Script 側で `Utilities.computeHmacSha256Signature(message, secret)` に文字列をそのまま渡すと、日本語などのマルチバイト文字を含むメッセージでブラウザ側（常にUTF-8）と結果がずれることがある。`Utilities.newBlob(message, "text/plain", "utf-8").getBytes()` で明示的にUTF-8バイト列に変換してから渡すこと（`appsscript/Code.gs` の `hmacHex` 参照）。空データ（`auth`）だけでテストすると気づけないので注意。
 
 ブラウザ側は Web Crypto（`crypto.subtle.importKey` + `sign`）、Apps Script 側は `Utilities.computeHmacSha256Signature` を使う。
 
@@ -540,26 +542,30 @@ POST https://api.github.com/repos/<owner>/<repo>/dispatches
 - [x] 1. `docs/content.json` を作り、`docs/index.html` がそれを読んで描画するよう改修（`gigs.js` を統合・削除。`calendar.js` の描画ロジック自体は変更不要——引き続き `b` をそのまま表示する）
 - [x] 2. `docs/editor` を作る（`docs/editor/index.html` + `editor.js` + `editor.css`）。ページと同じ見た目で直接編集する形（D-1）にしたため、別途プレビュー領域は無い
 - [x] 3. 正規化＋HMAC生成を実装（`docs/render.js` の `canonicalize`/`canonicalJSON`、`editor.js` の `signPayload`）。Apps Script と同じロジックのモックサーバーを立てて Playwright で自動テストし、一致を確認済み
-- [x] 4. `appsscript/Code.gs` を実装（検証ロジックは 3 のモックと共通のテストで確認済み。**実際の Apps Script へのデプロイは未実施**）
-- [x] 5. `repository_dispatch` を受ける `.github/workflows/content-update.yml` と検証スクリプト `.github/scripts/validate-and-write.js` を実装（`docs/content.json` のみを書き出し、`docs/CNAME` / `docs/.nojekyll` には触れない設計。**実際の Actions 実行は未確認**——初回の `publish` で確認する）
-- [x] 6. 画像のアップロード（縮小・向き補正・`uploadImage`。保存先は `docs/images/`）を実装。モックサーバーに対して実際に画像を送り、リサイズ後のファイルが正しく保存されることを確認済み
-- [ ] 7. 通しで動作確認（実際の Apps Script + GitHub Actions に対して）。**`SETUP.md` の外部設定が終わってから行う**
+- [x] 4. `appsscript/Code.gs` を実装し、実際に Apps Script へデプロイ済み（`clasp` を使用。デプロイ自体は Apps Script API 経由だと「アクセスできるユーザー：全員」が反映されないことがあり、最終的に Web UI の「新しいデプロイ」で作り直した）
+- [x] 5. `repository_dispatch` を受ける `.github/workflows/content-update.yml` と検証スクリプト `.github/scripts/validate-and-write.js` を実装。実際に `publish` を1回実行し、Actions が `docs/content.json` のみ書き出して `docs/CNAME` / `docs/.nojekyll` に触れないことを確認済み
+- [x] 6. 画像のアップロード（縮小・向き補正・`uploadImage`。保存先は `docs/images/`）を実装。実際にテスト画像を1枚アップロードして GitHub 上に反映されることを確認後、削除して後片付け済み
+- [x] 7. 通しで動作確認済み。**この過程で実機特有のバグを1件発見・修正した**（下記参照）
+
+### 実機テストで見つかったバグ
+
+- **HMAC計算の文字コード不一致。** `auth`（空データ）の署名検証は最初から通ったが、日本語を含む `publish` の署名だけが `bad_signature` になった。原因は `Utilities.computeHmacSha256Signature(message, secret)` に文字列をそのまま渡すと、マルチバイト文字の扱いがブラウザ側（常にUTF-8）と食い違うことがあるため。`appsscript/Code.gs` の `hmacHex` で `Utilities.newBlob(message, "text/plain", "utf-8").getBytes()` を使って明示的にUTF-8バイト列に変換してから渡すよう修正して解決した。**E節の正規化と合わせて、Apps Script側でHMACを組む際は必ずこの形にすること。**
 
 ## J. 完成時のチェックリスト
 
-（`[x]` はローカルのモックサーバー相手に Playwright での自動操作で確認済み。`[ ]` は実際の Apps Script / GitHub Actions のデプロイ後でないと確認できない項目）
+（実際の Apps Script + GitHub Actions に対して確認したもの。デプロイ日: 2026-09-07）
 
 - [x] 間違ったパスワードで送ったとき、GitHubに何も起きず、画面にエラーが出る
 - [ ] 同じリクエストを再送したとき、2回目が拒否される（リプレイ判定のロジック自体は実装・単体確認済みだが、「同一リクエストの再送」という状況そのものは未検証）
 - [x] パスワードを10回間違えたあと、正しいパスワードでも1時間は入れない
 - [x] 1回間違えた直後に正しく入力し直すと、そのまま入れる
-- [ ] エディタで編集して確定 → 1分以内にページに反映される（モックへの送信は成功。実際の反映速度は未確認）
+- [x] `publish` を実行 → GitHub Actions が実行され、`docs/content.json` に反映される（実際の反映所要時間は数秒〜十数秒程度だった。エディタ経由でのUI操作としての確認はまだ）
 - [ ] Apps Script を止めた状態でも、ページは通常どおり表示される（`index.html` が Apps Script に依存しない設計にはなっているが、実機確認はまだ）
-- [ ] スマホのブラウザで、文章の編集・写真の差し替え・行の追加削除・確定まで完結する（デスクトップのヘッドレスブラウザでの確認のみ）
+- [ ] スマホのブラウザで、文章の編集・写真の差し替え・行の追加削除・確定まで完結する（`/editor` のUI経由での実機確認はまだ。API直叩きでの疎通確認のみ）
 - [ ] スマホで撮った縦写真が、縦のまま正しい向きで表示される（EXIF回転が付いた実写真での確認はまだ）
-- [x] 画像の送信に失敗したとき、`content.json` が更新されない（コードの構造上そうなる設計。アップロード成功パスは確認済み、失敗パスは未検証）
+- [x] 画像の送信に失敗したとき、`content.json` が更新されない（コードの構造上そうなる設計。アップロード成功パスは実機確認済み、失敗パスは未検証）
 - [x] ページのソースを全部見てもトークンが出てこない
-- [ ] `https://www.musashi-drums.com/` と `https://www.musashi-drums.com/editor/` の両方がカスタムドメインのまま正しく開ける（CNAME/.nojekyllが壊れていない）
+- [x] `https://www.musashi-drums.com/` と `https://www.musashi-drums.com/editor/` の両方がカスタムドメインのまま正しく開ける（CNAME/.nojekyllが壊れていないことを`publish`後に確認済み）
 
 ## K. 未決の項目
 

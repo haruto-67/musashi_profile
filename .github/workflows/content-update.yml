@@ -13,20 +13,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate and write docs/content.json
+      # 検証・書き出し・コミット・pushをまとめて1ステップにし、pushが競合で
+      # 失敗したら最新のmasterに合わせて作り直してリトライする。
+      # docs/content.json は毎回まるごと再生成するファイルなので、
+      # rebase/mergeでの衝突解決はせず「最新のmasterの上にもう一度乗せて再生成」
+      # で十分（＝最後に成功した publish が勝つ、で一人編集者の運用と合っている）。
+      - name: Validate, write, commit and push (with retry on race)
         env:
           CONTENT_JSON: ${{ toJson(github.event.client_payload.content) }}
-        run: node .github/scripts/validate-and-write.js
-
-      - name: Commit if changed
         run: |
-          git add docs/content.json
-          if git diff --cached --quiet; then
-            echo "No changes, skipping commit."
-            exit 0
-          fi
           git config user.name "content-bot"
           git config user.email "actions@users.noreply.github.com"
-          UPDATED_AT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('docs/content.json','utf8')).updatedAt)")
-          git commit -m "content: update via editor ($UPDATED_AT)"
-          git push
+
+          for i in 1 2 3 4 5; do
+            node .github/scripts/validate-and-write.js
+
+            git add docs/content.json
+            if git diff --cached --quiet; then
+              echo "No changes, skipping commit."
+              exit 0
+            fi
+
+            UPDATED_AT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('docs/content.json','utf8')).updatedAt)")
+            git commit -m "content: update via editor ($UPDATED_AT)"
+
+            if git push; then
+              echo "pushed on attempt $i"
+              exit 0
+            fi
+
+            echo "push rejected on attempt $i, retrying against latest master..."
+            git reset --hard HEAD~1
+            git fetch origin master
+            git reset --hard origin/master
+            sleep $((i * 2))
+          done
+
+          echo "push failed after retries"
+          exit 1

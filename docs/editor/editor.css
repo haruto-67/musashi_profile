@@ -25,7 +25,10 @@ body{padding-bottom:64px}
 /* ---------- 編集可能テキスト ---------- */
 [contenteditable="true"]{
   outline:1px dashed rgba(232,227,216,.35);outline-offset:3px;cursor:text;
-  min-width:1.5em;min-height:1em
+  min-width:1.5em;min-height:1em;
+  /* iOSはフォーカスした入力欄の文字が16px未満だと画面を勝手に拡大するので、
+     本体側の見た目（.lede 15.5px 等）より編集中は大きくする */
+  font-size:16px !important
 }
 [contenteditable="true"]:focus{outline:1.5px solid var(--accent);outline-offset:3px}
 [contenteditable="true"]:empty::before{content:attr(data-placeholder);color:var(--faint)}
@@ -62,7 +65,7 @@ body{padding-bottom:64px}
 .field{margin:0 0 10px}
 .field label{display:block;font-family:var(--fdisp);font-size:10.5px;letter-spacing:.12em;color:var(--faint);margin:0 0 3px}
 .field input,.field textarea{
-  width:100%;font:inherit;font-size:14px;background:var(--panel);color:var(--ink);
+  width:100%;font:inherit;font-size:16px;background:var(--panel);color:var(--ink);
   border:1px solid var(--rule);padding:6px 8px
 }
 .field input.invalid{border-color:#ff8b7a}
@@ -70,8 +73,8 @@ body{padding-bottom:64px}
 .fieldRow .field{flex:1;min-width:120px}
 
 .linkRow{display:flex;gap:6px;align-items:center;margin:0 0 6px}
-.linkRow input{font:inherit;font-size:13px;background:var(--panel);color:var(--ink);border:1px solid var(--rule);padding:4px 8px}
-.linkRow input.label{width:110px}
+.linkRow input{font:inherit;font-size:16px;background:var(--panel);color:var(--ink);border:1px solid var(--rule);padding:4px 8px}
+.linkRow input.label{width:120px;flex-shrink:0}
 .linkRow input.url{flex:1}
 .linkRow button{background:transparent;color:var(--faint);border:1px solid var(--rule);width:26px;cursor:pointer}
 .addLinkBtn{
@@ -82,7 +85,7 @@ body{padding-bottom:64px}
 /* ---------- 確定バー ---------- */
 .editorBar{
   position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper);border-top:2px solid var(--ink);
-  padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap
+  padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end
 }
 .editorBar button{
   font-family:var(--fdisp);font-weight:600;letter-spacing:.08em;font-size:14px;

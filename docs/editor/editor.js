@@ -633,7 +633,9 @@
     gigsEditorEl.appendChild(card);
     // 日付未入力の新規行は常に表示対象なので、タブ表示（本数バッジ）だけ更新する
     buildGigsMonthNav();
-    card.querySelector('input[type=date]').focus();
+    // 日付欄をfocus()するとiOSのネイティブ日付ピッカーが勝手に開いて驚かせるので、
+    // 代わりにバンド名（最初のテキスト欄）にカーソルを入れる
+    card.querySelector('input[type=text]').focus();
     markDirty();
   });
 

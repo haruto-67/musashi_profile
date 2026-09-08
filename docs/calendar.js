@@ -16,6 +16,13 @@ function renderCalendar(GIGS) {
   host.appendChild(nav);
   host.appendChild(body);
 
+  var ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return ESCAPES[c];
+    });
+  }
+
   function listOf(d) {
     var key = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
     return GIGS.filter(function (g) {
@@ -31,6 +38,27 @@ function renderCalendar(GIGS) {
       draw(i);
     });
     nav.appendChild(b);
+  });
+
+  /* マスをタップしたとき、下の一覧の該当行まで移動して一瞬光らせる。
+     body の中身は draw() のたびに作り直すので、監視は body に1つだけ付ける。 */
+  var hlTimer = null;
+  function focusGig(idx) {
+    var li = document.getElementById("gig-" + idx);
+    if (!li) return;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    li.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    var prev = body.querySelector(".gigs li.is-target");
+    if (prev) prev.classList.remove("is-target");
+    li.classList.add("is-target");
+    clearTimeout(hlTimer);
+    hlTimer = setTimeout(function () {
+      li.classList.remove("is-target");
+    }, 1800);
+  }
+  body.addEventListener("click", function (e) {
+    var btn = e.target && e.target.closest ? e.target.closest(".ev") : null;
+    if (btn) focusGig(btn.getAttribute("data-gig"));
   });
 
   function draw(i) {
@@ -61,15 +89,29 @@ function renderCalendar(GIGS) {
       });
       h += '<div class="day' + (hit.length ? " hit" : "") + '"><b>' + day + "</b>";
       hit.forEach(function (g) {
-        h += '<span class="ev"><u>' + g.e + "</u><em>" + g.b + "</em></span>";
+        /* ライブ名が未入力のうちは備考（「詳細未解禁」など）を代わりに出す。
+           何も無いマスだとタップ先が分からないため。 */
+        var t = g.e || g.n || "予定あり";
+        h +=
+          '<button type="button" class="ev" data-gig="' +
+          list.indexOf(g) +
+          '" title="' +
+          esc(t + (g.b ? " / " + g.b : "")) +
+          '"><u>' +
+          esc(t) +
+          "</u>" +
+          (g.b ? "<em>" + esc(g.b) + "</em>" : "") +
+          "</button>";
       });
       h += "</div>";
     }
     h += '</div><ul class="gigs">';
-    list.forEach(function (g) {
+    list.forEach(function (g, gi) {
       var dd = new Date(g.d.replace(/-/g, "/"));
       h +=
-        '<li><span class="gd">' +
+        '<li id="gig-' +
+        gi +
+        '"><span class="gd">' +
         (dd.getMonth() + 1) +
         "/" +
         dd.getDate() +
@@ -77,20 +119,20 @@ function renderCalendar(GIGS) {
         W[dd.getDay()] +
         "</em></span>" +
         '<span class="gmain"><b>' +
-        g.e +
+        esc(g.e) +
         '</b><span class="ge">' +
-        g.b +
-        (g.n ? '<u class="gn">' + g.n + "</u>" : "") +
+        esc(g.b) +
+        (g.n ? '<u class="gn">' + esc(g.n) + "</u>" : "") +
         "</span></span>" +
         '<span class="gv"><em>' +
-        g.c +
+        esc(g.c) +
         "</em>" +
-        g.v +
+        esc(g.v) +
         "</span>" +
         '<span class="gt">OPEN ' +
-        g.o +
+        esc(g.o) +
         "<em>出番 " +
-        g.st +
+        esc(g.st) +
         "</em></span></li>";
     });
     if (!list.length) h += '<li class="none">この月の予定はまだありません。</li>';

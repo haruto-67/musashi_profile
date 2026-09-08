@@ -94,7 +94,7 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
    （index.htmlのviewport-fit=coverとセット） */
 .editorBar{
   position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--paper);border-top:2px solid var(--ink);
-  padding:7px 14px calc(7px + env(safe-area-inset-bottom));
+  padding:6px 14px calc(6px + env(safe-area-inset-bottom));
   display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end
 }
 .editorBar button{
@@ -102,6 +102,9 @@ body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
   background:var(--accent);color:var(--paper);border:0;padding:7px 18px;cursor:pointer
 }
 .editorBar button:disabled{opacity:.5;cursor:default}
+/* メッセージが無いときはバーの高さをボタンに合わせたいので、
+   幅いっぱいの空pで1行分の高さを食わないよう非表示にする（editor.js側で
+   テキストが空ならhidden属性を付ける。[hidden]は上のグローバル指定で消える） */
 .editorStatus{width:100%;font-size:11.5px;color:var(--faint)}
 .editorStatus.ok{color:#8fd19e}
 .editorStatus.err{color:#ff8b7a}

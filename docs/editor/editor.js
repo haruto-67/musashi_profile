@@ -776,6 +776,7 @@
   function setStatus(msg, kind) {
     editorStatus.textContent = msg;
     editorStatus.className = "editorStatus" + (kind ? " " + kind : "");
+    editorStatus.hidden = !msg;
   }
   function setBarBusy(busy) {
     publishBtn.disabled = busy;

@@ -231,11 +231,13 @@ footer{padding:38px 0 62px}
   .band{grid-template-columns:1fr}
   .bandimg{aspect-ratio:16/9;order:-1}
   .support{columns:1}
-  .day{min-height:58px;padding:3px 4px}
+  .dow,.days{gap:2px}           /* マスの中身に使える幅を少しでも稼ぐ */
+  .day{min-height:62px;padding:3px}
   .day b{font-size:12px;margin-bottom:2px}
-  .ev{font-size:8.5px}
-  .ev u{display:none}           /* 狭いのでライブ名は隠してバンド名だけ残す */
-  .ev em{color:var(--ink);font-weight:700}
+  /* マス内はPC・下の一覧と同じ「ライブ名の下に小さくバンド名」の2段。
+     狭さは .ev の基本スタイルの nowrap + ellipsis（…）で吸収する */
+  .ev{font-size:9px;line-height:1.35;margin-bottom:2px}
+  .ev em{font-size:8.5px;color:rgba(232,227,216,.66)}
   .gigs li{grid-template-columns:56px 1fr;gap:2px 12px}
   .gv,.gt{grid-column:2}
   .gt em{display:inline;margin-left:8px}

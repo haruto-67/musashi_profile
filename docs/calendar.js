@@ -23,6 +23,14 @@ function renderCalendar(GIGS) {
     });
   }
 
+  /* 未入力の項目は「-」で埋める。空のままだと一覧の桁がずれて、
+     見る側には意味の分からない余白になってしまうため。
+     備考 n だけはバッジなので対象外（無いときは出さない）。 */
+  function dash(s) {
+    s = s == null ? "" : String(s).trim();
+    return s === "" ? "-" : s;
+  }
+
   function listOf(d) {
     var key = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
     return GIGS.filter(function (g) {
@@ -119,20 +127,19 @@ function renderCalendar(GIGS) {
         W[dd.getDay()] +
         "</em></span>" +
         '<span class="gmain"><b>' +
-        esc(g.e) +
+        esc(dash(g.e)) +
         '</b><span class="ge">' +
-        esc(g.b) +
+        esc(dash(g.b)) +
         (g.n ? '<u class="gn">' + esc(g.n) + "</u>" : "") +
         "</span></span>" +
-        '<span class="gv"><em>' +
-        esc(g.c) +
-        "</em>" +
-        esc(g.v) +
+        '<span class="gv">' +
+        /* 地名と会場は隣り合わせなので、両方とも空のときは「-」を1つだけ出す */
+        (g.c || g.v ? "<em>" + esc(dash(g.c)) + "</em>" + esc(dash(g.v)) : "-") +
         "</span>" +
         '<span class="gt">OPEN ' +
-        esc(g.o) +
+        esc(dash(g.o)) +
         "<em>出番 " +
-        esc(g.st) +
+        esc(dash(g.st)) +
         "</em></span></li>";
     });
     if (!list.length) h += '<li class="none">この月の予定はまだありません。</li>';

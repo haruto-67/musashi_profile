@@ -22,10 +22,16 @@
     return JSON.stringify(canonicalize(value));
   }
 
-  function setBg(el, path) {
+  // 背景画像のdivには本来alt属性を書けないので、role="img"+aria-labelで
+  // スクリーンリーダー・検索エンジン向けの代替テキストを補う
+  function setBg(el, path, label) {
     if (!el) return;
     if (path) el.style.setProperty("--src", "url('" + path + "')");
     else el.style.removeProperty("--src");
+    if (label) {
+      el.setAttribute("role", "img");
+      el.setAttribute("aria-label", label);
+    }
   }
 
   function setMultiline(el, text) {
@@ -84,7 +90,7 @@
 
     var img = document.createElement("div");
     img.className = "bandimg img";
-    setBg(img, band.image);
+    setBg(img, band.image, band.name ? band.name + "の写真" : "");
     art.appendChild(img);
 
     return art;
@@ -121,8 +127,8 @@
     setMultiline($("nameText"), p.name);
     setMultiline($("nameEnText"), p.nameEn);
     setMultiline($("ledeText"), p.lede);
-    setBg($("heroShot"), p.heroImage);
-    setBg($("portraitImg"), p.portraitImage);
+    setBg($("heroShot"), p.heroImage, p.name ? p.name + "（" + (p.role || "ドラマー") + "）" : "");
+    setBg($("portraitImg"), p.portraitImage, p.name ? p.name + "のポートレート写真" : "");
 
     setMultiline($("areaText"), p.area);
     showHide($("areaBlock"), !!p.area);
@@ -137,7 +143,7 @@
     setMultiline($("emailText"), p.email);
     showHide($("metaBlock"), !!p.email);
 
-    setBg($("stripImg"), data.stripImage);
+    setBg($("stripImg"), data.stripImage, p.name ? p.name + "のライブ写真" : "");
 
     var bandsList = $("bandsList");
     if (bandsList) {

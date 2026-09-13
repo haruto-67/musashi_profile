@@ -27,8 +27,9 @@ jobs:
 
           for i in 1 2 3 4 5; do
             node .github/scripts/validate-and-write.js
+            node .github/scripts/update-seo-tags.js
 
-            git add docs/content.json
+            git add docs/content.json docs/index.html
             if git diff --cached --quiet; then
               echo "No changes, skipping commit."
               exit 0
